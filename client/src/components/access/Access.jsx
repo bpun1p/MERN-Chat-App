@@ -1,13 +1,15 @@
 import React from 'react'
 import Register from './register/Register'
 import Login from './login/Login'
-
+import './Access.css'
 
 export default function Access() {
   return (
-    <>
-      <Login/>
-      <Register/>
-    </>
+    <div className='access-container'>
+      <div className='access-body'>
+        <Login/>
+        <Register/>
+      </div>
+    </div>
   )
 }

@@ -1,4 +1,5 @@
 import React  from 'react'
+import './Register.css'
 
 export default function Register() {
 
@@ -10,17 +11,17 @@ export default function Register() {
           <input
             placeholder='Email'
             type='text'
-            id='email'
+            id='register-email'
           />
           <input
             placeholder='Create a password'
             type='password'
-            id='password'
+            id='register-password'
           />
           <input
             placeholder='Confirm your password'
             type='password'
-            id='confirm-password'
+            id='register-confirm-password'
           />
           <button type='submit' className='register-btn'>Create</button>
         </form>

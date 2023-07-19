@@ -1,4 +1,5 @@
 import React  from 'react'
+import './Login.css'
 
 export default function Login() {
 
@@ -10,12 +11,12 @@ export default function Login() {
           <input
             placeholder='Enter your email'
             type='text'
-            id='email'
+            id='login-email'
           />
           <input
             placeholder='Enter your password'
             type='password'
-            id='password'
+            id='login-password'
           />
           <button type='submit' className='login-btn'>Login</button>
         </form>
