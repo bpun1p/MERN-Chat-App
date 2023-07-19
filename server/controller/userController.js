@@ -22,7 +22,28 @@ const registerUser = async (req, res) => {
   const {email, password} = req.body;
 
   try {
-    const user = await User.register(email, password)
+    if (!email || ! password) {
+      throw Error('All fields must be filled');
+    }
+    if (!validator.isEmail(email)) {
+      throw Error('Email is not valid');
+    }
+    if (!validator.isStrongPassword(password)) {
+      throw Error('Password is not strong enough');
+    }
+  
+    const exist = await this.findOne({ email });
+
+    if (exist) {
+      throw Error('Email already exists');
+    };
+  
+    const salt = await bcrypt.genSalt(10);             //salt basically adds extra strings to the end of the password before hashing for more pass protection
+    const hash = await bcrypt.hash(password, salt);
+  
+    const credentials = await this.create({ email, password: hash });
+
+    const user = await User.register(credentials)
     const token = createToken(user._id)
     res.status(200).json({email, token})
   } 
