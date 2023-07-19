@@ -1,7 +1,19 @@
-import React  from 'react'
+import { useState } from 'react'
 import './Register.css'
 
 export default function Register() {
+
+  const [registerCreds, setRegisterCreds] = useState({
+    email: null,
+    password: null,
+    confirmPassword: null
+  })
+
+  const handleFormSubmit = (e) => {
+    e.preventDefault()
+
+    console.log(registerCreds)
+  }
 
   return (
     <div className='register-container'>
@@ -12,18 +24,21 @@ export default function Register() {
             placeholder='Email'
             type='text'
             id='register-email'
+            onChange={(e) => setRegisterCreds({...registerCreds, email: e.target.value})}
           />
           <input
             placeholder='Create a password'
             type='password'
             id='register-password'
+            onChange={(e) => setRegisterCreds({...registerCreds, password: e.target.value})}
           />
           <input
             placeholder='Confirm your password'
             type='password'
             id='register-confirm-password'
+            onChange={(e) => setRegisterCreds({...registerCreds, confirmPassword: e.target.value})}
           />
-          <button type='submit' className='register-btn'>Create</button>
+          <button type='submit' className='register-btn' onClick={handleFormSubmit} >Create</button>
         </form>
       </div>
     </div>
