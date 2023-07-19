@@ -9,6 +9,22 @@ const loginUser = async (req, res) => {
   const {email, password} = req.body;
 
   try {
+    if (!email || !password) {
+      throw Error('All fields must be filled');
+    }
+    
+    const exist = await this.findOne({ email });
+  
+    if (!exist) {
+      throw Error('Incorrect email')
+    }
+  
+    const match = await bcrypt.compare(password, exist.password)
+  
+    if (!match) {
+      throw Error('Incorrect password');
+    }
+
     const user = await User.login(email, password);
     const token = createToken(user._id);
     res.status(200).json({email, token});
