@@ -9,19 +9,20 @@ export const Registration = () => {
 
   const registration = async (email, password) => {
     setLoadingRegistration(true)
-    setRegistrationError(false)
+    setRegistrationError(null)
     const response = await registerUser(email, password)
 
     if (response.status !== 200) {
+      let error = response.response.data.error
       setLoadingRegistration(loadingRegistration => !loadingRegistration)
-      setRegistrationError((registrationError) => !registrationError)
+      setRegistrationError(() => error)
       return;
     }
 
     const data = response.data
     localStorage.setItem('user', JSON.stringify(data))
     //set dispatch settings to store
-    setLoadingRegistration(false)
+    setLoadingRegistration(loadingRegistration => !loadingRegistration)
   };
 
   return { registration, loadingRegistration, registrationError }

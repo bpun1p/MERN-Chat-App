@@ -13,8 +13,9 @@ export const Login = () => {
     const response = await loginUser(email, password)
 
     if (response.status !== 200) {
+      let error = response.response.data.error
       setLoadingLogin(loadingLogin => !loadingLogin)
-      setLoginError(loginError => !loginError)
+      setLoginError(() => error)
       return
     }
     
