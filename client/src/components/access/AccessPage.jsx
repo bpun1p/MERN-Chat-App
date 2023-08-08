@@ -1,6 +1,6 @@
 import Register from './register/Register'
 import Login from './login/Login'
-import './Access.css'
+import './AccessPage.css'
 
 export default function Access() {
   return (

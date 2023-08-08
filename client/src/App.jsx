@@ -1,6 +1,6 @@
 import './App.css'
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Access from './components/access/Access'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import Access from './components/access/AccessPage'
 
 export default function App() {
   return (
