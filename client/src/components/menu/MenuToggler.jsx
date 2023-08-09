@@ -1,5 +1,6 @@
 import './MenuToggler.css'
-import { useState } from 'react';
+import { useState } from 'react'
+import Menu from './Menu'
 
 export default function MenuToggler() {
   const [burgerClass, setBurgerClass] = useState('burger-bar unclicked')
@@ -27,7 +28,9 @@ export default function MenuToggler() {
             <div className={burgerClass}></div>
           </div>
         </nav>
-        <div className={menuClass}></div>
+        <div className={menuClass}>
+          <Menu/>
+        </div>
       </div>
     </>
   )

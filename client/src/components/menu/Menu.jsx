@@ -1,12 +1,13 @@
 import './menu.css'
 import { Link } from 'react-router-dom'
+import Avatar from '../../assets/images/avatarImage.png'
 
 export default function Menu() {
   return (
-    <div className='menu-container'>
+    <div className='menu-body'>
       <div className='menu-header'>
         <div className='menu-header-user'>
-          <img className='menu-header-user-image'/>
+          <img className='menu-header-user-image' src={Avatar}/>
           <span className='menu-header-user-name'>User</span>
         </div>
         <div className='menu-header-settings'>

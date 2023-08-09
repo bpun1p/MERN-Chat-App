@@ -15,4 +15,5 @@
   margin-right: auto;
   margin-left: auto;
   display: flex;
+  z-index: -1;
 }
