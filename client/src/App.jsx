@@ -1,11 +1,15 @@
-import React from 'react'
 import './App.css'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import Access from './components/access/AccessPage'
+import AccessNav from './components/accessNav/AccessNav';
 
-function App() {
-
+export default function App() {
   return (
-    <></>
+    <BrowserRouter>
+      <AccessNav/>
+      <Routes>
+        <Route path='/access' element={<Access/>}/>
+      </Routes>
+    </BrowserRouter>
   )
 }
-
-export default App

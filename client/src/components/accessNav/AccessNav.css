@@ -1,0 +1,10 @@
+.accessNav-login-register {
+  background-color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  float: right;
+  font-size: 1rem;
+  margin: 1%;
+  font-weight: 600;
+}
