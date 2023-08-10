@@ -4,6 +4,7 @@ import './Register.css'
 export default function Register() {
 
   const [registerCreds, setRegisterCreds] = useState({
+    name: null,
     email: null,
     password: null,
     confirmPassword: null
@@ -20,6 +21,12 @@ export default function Register() {
       <div className='register-body'>
         <h1 className='register-header'>Register</h1>
         <form className='register-form'>
+          <input
+            placeholder='Name'
+            type='text'
+            id='register-name'
+            onChange={(e) => setRegisterCreds({...registerCreds, name: e.target.value})}
+          />
           <input
             placeholder='Email'
             type='text'
