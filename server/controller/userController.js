@@ -37,10 +37,10 @@ const loginUser = async (req, res) => {
 }
 
 const registerUser = async (req, res) => {
-  const {email, password} = req.body;
+  const {name, email, password} = req.body;
 
   try {
-    if (!email || ! password) {
+    if (name || !email || ! password) {
       throw Error('All fields must be filled')
     }
     if (!validator.isEmail(email)) {
