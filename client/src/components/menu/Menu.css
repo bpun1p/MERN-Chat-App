@@ -11,6 +11,8 @@ nav {
 
 .nav-chats-link {
   width: 100%;
+  display: inline-flex;
+  text-decoration: none;
 }
 
 .nav-settings-link {
@@ -32,13 +34,13 @@ nav {
 .nav-footer {
   width: 100%;
   position: relative;
-  top: 68%;
+  top: 60%;
   border-top: 1px solid white;
   padding-top: 1rem;
   height: fit-content;
 }
 
-.nav-chats-btn, .nav-settings-btn {
+.nav-chats-text, .nav-settings-text {
   background: none;
   border: none;
   font-size: 1.2rem;
@@ -48,12 +50,7 @@ nav {
   cursor: pointer;
 }
 
-.nav-chats-btn {
-  text-align: left;
-  padding-left: 10%;
-}
-
-.menu-header-user-image {
+#profile-image {
   width: 20%;
   height: auto;
   margin-right: 5%;
@@ -74,4 +71,40 @@ nav {
 .menu-header-user-name {
   position: relative;
   bottom: 1.2rem;
+}
+
+.menu-header-settings-icon-container {
+  position: relative;
+  left: 83%;
+  top: 3%;
+}
+
+.nav-settings-icon-container {
+  position: relative;
+  left: 56%;
+  bottom: 2.5rem;
+}
+.nav-settings-text {
+  right: 1.25rem;
+}
+
+.nav-header-chat-icon-container {
+  width: fit-content;
+  padding: 5px;
+  border: 1px solid black;
+  border-radius: 10px;
+  background-color: rgb(224, 222, 222);
+  position: relative;
+  left: 5%;
+}
+
+#chat-icon {
+  height: 2rem;
+}
+
+.nav-chats-text {
+  bottom: 10%;
+  width: fit-content;
+  margin-left: 10%;
+
 }
