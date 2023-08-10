@@ -1,6 +1,6 @@
 import { useState } from 'react'
 // import redux
-import { registerUser } from '../service/authService'
+import { registerUser } from '../service/AuthService'
 
 export const Registration = () => {
   const [registrationError, setRegistrationError] = useState(null);
