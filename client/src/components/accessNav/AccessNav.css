@@ -1,3 +1,9 @@
+.accessNav-container {
+  width: 10%;
+  float: right;
+  padding: 1%;
+}
+
 .accessNav-login-register {
   background-color: white;
   border: none;

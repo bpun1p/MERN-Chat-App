@@ -1,0 +1,15 @@
+#settings-icon {
+  height: 2.5rem;
+  width: auto;
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+#settings-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin: 0;
+  padding: 0;
+}
