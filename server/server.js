@@ -24,4 +24,4 @@ mongoose.connect(process.env.DB_URI, { useNewUrlParser: true, useUnifiedTopology
   .catch((err) => console.log(err))
 
 //Api routes
-app.use('/access', userRoutes)
+app.use('/auth', userRoutes)
