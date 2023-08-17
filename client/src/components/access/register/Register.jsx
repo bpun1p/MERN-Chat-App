@@ -1,19 +1,42 @@
 import { useState } from 'react'
 import './Register.css'
+import { useNavigate } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { useRegisterMutation } from '../../../slices/usersApiSlice'
+import { setCredentials } from '../../../slices/authSlice'
+import { toast } from 'react-toastify'
 
 export default function Register() {
+  const [ name, setName ] = useState(null)
+  const [ email, setEmail ] = useState(null)
+  const [ password, setPassword ] = useState(null)
+  const [ confirmPassword, setConfirmPassword ] = useState(null)
+  
+  const [ register, { isLoading } ] = useRegisterMutation()
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
 
-  const [registerCreds, setRegisterCreds] = useState({
-    name: null,
-    email: null,
-    password: null,
-    confirmPassword: null
-  })
-
-  const handleFormSubmit = (e) => {
+  const handleCreateClicked = async (e) => {
     e.preventDefault()
+    if (!name || !email || !password || !confirmPassword) {
+      toast.error('All fields must be filled!')
+      return
+    }
+    else if (password !== confirmPassword) {
+      toast.error('Passwords do not match!')
+      return
+    }
 
-    console.log(registerCreds)
+    try {
+      const res = await register({ name, email, password }).unwrap()
+      dispatch(setCredentials({...res}))
+      navigate('/chats')
+    } catch(err) {
+      if (err.data && err.data.error) {
+        toast.error(err.data.error)
+      }
+    }
+    return
   }
 
   return (
@@ -22,30 +45,30 @@ export default function Register() {
         <h1 className='register-header'>Register</h1>
         <form className='register-form'>
           <input
-            placeholder='Name'
+            placeholder='Enter name'
             type='text'
             id='register-name'
-            onChange={(e) => setRegisterCreds({...registerCreds, name: e.target.value})}
+            onChange={(e) => setName(() => e.target.value)}
           />
           <input
-            placeholder='Email'
+            placeholder='Enter email'
             type='text'
             id='register-email'
-            onChange={(e) => setRegisterCreds({...registerCreds, email: e.target.value})}
+            onChange={(e) => setEmail(() => e.target.value)}
           />
           <input
-            placeholder='Create a password'
+            placeholder='Create password'
             type='password'
             id='register-password'
-            onChange={(e) => setRegisterCreds({...registerCreds, password: e.target.value})}
+            onChange={(e) => setPassword(() => e.target.value)}
           />
           <input
-            placeholder='Confirm your password'
+            placeholder='Confirm password'
             type='password'
             id='register-confirm-password'
-            onChange={(e) => setRegisterCreds({...registerCreds, confirmPassword: e.target.value})}
+            onChange={(e) => setConfirmPassword(() => e.target.value)}
           />
-          <button type='submit' className='register-btn' onClick={handleFormSubmit}>Create</button>
+          <button type='submit' className='register-btn' disabled={isLoading} onClick={handleCreateClicked}>Create</button>
         </form>
       </div>
     </div>
