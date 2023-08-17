@@ -1,16 +1,31 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './Login.css'
+import { useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { useLoginMutation } from '../../../slices/usersApiSlice'
+import { setCredentials } from '../../../slices/authSlice'
 
 export default function Login() {
-  const [loginCreds, setIsLoginCreds] = useState({
-    email: null,
-    password: null,
-  })
+  const [ email, setEmail ] = useState(null)
+  const [ password, setPassword ] = useState(null) 
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const [ login, { isLoading, error } ] = useLoginMutation()
+  const { user } = useSelector((state) => state.auth)
+  const [ isError, setIsError ] = useState(null)
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault()
-
-    console.log(loginCreds)
+    try {
+      const res = await login({ email, password }).unwrap()
+      dispatch(setCredentials({...res}))
+      navigate('/chats')
+    } catch(err) {
+      if (err.data && err.data.error) {
+        console.log(err)
+        setIsError(() => err.data.error)
+      }
+    }
   }
 
   return (
@@ -22,16 +37,17 @@ export default function Login() {
             placeholder='Enter your email'
             type='text'
             id='login-email'
-            onChange={(e) => setIsLoginCreds({...loginCreds, email: e.target.value})}
+            onChange={(e) => setEmail(() => e.target.value)}
           />
           <input
             placeholder='Enter your password'
             type='password'
             id='login-password'
-            onChange={(e) => setIsLoginCreds({...loginCreds, password: e.target.value})}
+            onChange={(e) => setPassword(() =>  e.target.value)}
           />
-          <button type='submit' className='login-btn' onClick={handleFormSubmit}>Login</button>
+          <button disabled={isLoading} type='submit' className='login-btn' onClick={handleFormSubmit}>Login</button>
         </form>
+        {isError ? <span>{isError}</span> : null}  {/* possible guards and checks required for error return */}
       </div>
     </div>
   )

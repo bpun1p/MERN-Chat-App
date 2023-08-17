@@ -45,7 +45,7 @@ export default function Register() {
             id='register-confirm-password'
             onChange={(e) => setRegisterCreds({...registerCreds, confirmPassword: e.target.value})}
           />
-          <button type='submit' className='register-btn' onClick={handleFormSubmit} >Create</button>
+          <button type='submit' className='register-btn' onClick={handleFormSubmit}>Create</button>
         </form>
       </div>
     </div>
