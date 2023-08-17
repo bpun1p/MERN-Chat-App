@@ -49,18 +49,17 @@ const registerUser = async (req, res) => {
       throw Error('Password is not strong enough')
     }
   
-    const user = await User.findOne({ email })
+    const exists = await User.findOne({ email })
 
-    if (user) {
+    if (exists) {
       throw Error('Email already exists')
     }
   
     const salt = await bcrypt.genSalt(10)          //salt basically adds extra strings to the end of the password before hashing for more pass protection
     const hash = await bcrypt.hash(password, salt)
   
-    const credentials = await User.create({ name, email, password: hash })
-    const token = createToken(credentials._id)
-    console.log(token)
+    const user = await User.create({ name, email, password: hash })
+    const token = createToken(user._id)
     res.status(200).json({email, token})
   } 
   catch(err) {
