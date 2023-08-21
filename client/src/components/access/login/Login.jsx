@@ -1,16 +1,36 @@
 import { useState } from 'react'
 import './Login.css'
+import { useNavigate } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { useLoginMutation } from '../../../slices/usersApiSlice'
+import { setCredentials } from '../../../slices/authSlice'
+import { toast } from 'react-toastify'
 
 export default function Login() {
-  const [loginCreds, setIsLoginCreds] = useState({
-    email: null,
-    password: null,
-  })
+  const [ email, setEmail ] = useState(null)
+  const [ password, setPassword ] = useState(null)
+  
+  const [ login, { isLoading } ] = useLoginMutation()
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
 
-  const handleFormSubmit = (e) => {
+  const handleLoginClicked = async (e) => {
     e.preventDefault()
+    if (!email || !password) {
+      toast.error('All fields must be filled!')
+      return
+    }
 
-    console.log(loginCreds)
+    try {
+      const res = await login({ email, password }).unwrap()
+      dispatch(setCredentials({...res}))
+      navigate('/chats')
+    } catch(err) {
+      if (err.data && err.data.error) {
+        toast.error(err.data.error)
+      }
+    }
+    return
   }
 
   return (
@@ -19,18 +39,18 @@ export default function Login() {
         <h1 className='login-header'>Login</h1>
         <form className='login-form'>
           <input
-            placeholder='Enter your email'
+            placeholder='Enter email'
             type='text'
             id='login-email'
-            onChange={(e) => setIsLoginCreds({...loginCreds, email: e.target.value})}
+            onChange={(e) => setEmail(() => e.target.value)}
           />
           <input
-            placeholder='Enter your password'
+            placeholder='Enter password'
             type='password'
             id='login-password'
-            onChange={(e) => setIsLoginCreds({...loginCreds, password: e.target.value})}
+            onChange={(e) => setPassword(() =>  e.target.value)}
           />
-          <button type='submit' className='login-btn' onClick={handleFormSubmit}>Login</button>
+          <button disabled={isLoading} type='submit' className='login-btn' onClick={handleLoginClicked}>Login</button>
         </form>
       </div>
     </div>

@@ -15,19 +15,18 @@ const loginUser = async (req, res) => {
       throw Error('All fields must be filled');
     }
     
-    const exist = await this.findOne({ email })
+    const user = await User.findOne({ email })
   
-    if (!exist) {
+    if (!user) {
       throw Error('Incorrect email')
     }
   
-    const match = await bcrypt.compare(password, exist.password)
+    const match = await bcrypt.compare(password, user.password)
   
     if (!match) {
       throw Error('Incorrect password')
     }
 
-    const user = await User.login(email, password);
     const token = createToken(user._id)
     res.status(200).json({email, token})
   } 
@@ -37,10 +36,10 @@ const loginUser = async (req, res) => {
 }
 
 const registerUser = async (req, res) => {
-  const {email, password} = req.body;
+  const {name, email, password} = req.body;
 
   try {
-    if (!email || ! password) {
+    if (!name || !email || ! password) {
       throw Error('All fields must be filled')
     }
     if (!validator.isEmail(email)) {
@@ -50,18 +49,16 @@ const registerUser = async (req, res) => {
       throw Error('Password is not strong enough')
     }
   
-    const exist = await this.findOne({ email })
+    const exists = await User.findOne({ email })
 
-    if (exist) {
+    if (exists) {
       throw Error('Email already exists')
     }
   
     const salt = await bcrypt.genSalt(10)          //salt basically adds extra strings to the end of the password before hashing for more pass protection
     const hash = await bcrypt.hash(password, salt)
   
-    const credentials = await this.create({ email, password: hash })
-
-    const user = await User.register(credentials)
+    const user = await User.create({ name, email, password: hash })
     const token = createToken(user._id)
     res.status(200).json({email, token})
   } 
