@@ -9,7 +9,7 @@ export default function Menu() {
   return (
     <div className='menu-body'>
       <div className='menu-header-settings-icon-container'>
-        <Link to={'/settings'} className='nav-settings-link'><button id='settings-btn'><img id='settings-icon' src={SettingsIcon}/></button></Link>
+        <Link to={'/profile'} className='nav-settings-link'><button id='settings-btn'><img id='settings-icon' src={SettingsIcon}/></button></Link>
       </div>
       <div className='menu-header'>
         <div className='menu-header-user'>
@@ -30,7 +30,7 @@ export default function Menu() {
           </Link>
         </div>
         <div className='nav-footer'>
-          <Link to={'/settings'} className='nav-settings-link'>
+          <Link to={'/profile'} className='nav-settings-link'>
             <button type="button" className="nav-settings-text">Settings</button>
             <div className='nav-settings-icon-container'>
               <img id='settings-icon' src={SettingsIcon}/>
