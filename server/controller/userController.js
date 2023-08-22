@@ -20,7 +20,7 @@ const loginUser = async (req, res) => {
     if (!user) {
       throw Error('Incorrect email')
     }
-  
+    const name = user.name
     const match = await bcrypt.compare(password, user.password)
   
     if (!match) {
@@ -28,7 +28,11 @@ const loginUser = async (req, res) => {
     }
 
     const token = createToken(user._id)
-    res.status(200).json({email, token})
+    res.status(200).json({
+      email, 
+      name, 
+      token
+    })
   } 
   catch(err) {
     res.status(400).json({error: err.message})
@@ -60,7 +64,7 @@ const registerUser = async (req, res) => {
   
     const user = await User.create({ name, email, password: hash })
     const token = createToken(user._id)
-    res.status(200).json({email, token})
+    res.status(200).json({email, name, token})
   } 
   catch(err) {
     res.status(400).json({error: err.message})

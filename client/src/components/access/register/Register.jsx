@@ -7,10 +7,10 @@ import { setCredentials } from '../../../slices/authSlice'
 import { toast } from 'react-toastify'
 
 export default function Register() {
-  const [ name, setName ] = useState(null)
-  const [ email, setEmail ] = useState(null)
-  const [ password, setPassword ] = useState(null)
-  const [ confirmPassword, setConfirmPassword ] = useState(null)
+  const [ name, setName ] = useState('')
+  const [ email, setEmail ] = useState('')
+  const [ password, setPassword ] = useState('')
+  const [ confirmPassword, setConfirmPassword ] = useState('')
   
   const [ register, { isLoading } ] = useRegisterMutation()
   const navigate = useNavigate()

@@ -7,6 +7,7 @@ import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import ChatsScreen from './components/chats/ChatsScreen'
 import PrivateRoute from './components/utils/privateRoutes/PrivateRoute'
+import ProfileScreen from './components/profile/ProfileScreen'
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
         <Route path='/access' element={<Access/>}/>
         <Route path='' element={<PrivateRoute/>}>
           <Route path='/chats' element={<ChatsScreen/>}/>
+          <Route path='/profile' element={<ProfileScreen/>}/>
         </Route>
       </Routes>
     </BrowserRouter>
