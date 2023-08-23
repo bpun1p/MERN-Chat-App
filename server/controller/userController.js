@@ -21,9 +21,9 @@ const loginUser = async (req, res) => {
       throw Error('Incorrect email')
     }
     const name = user.name
-    const match = await bcrypt.compare(password, user.password)
+    const passMatch = await bcrypt.compare(password, user.password)
   
-    if (!match) {
+    if (!passMatch) {
       throw Error('Incorrect password')
     }
 
@@ -46,10 +46,10 @@ const registerUser = async (req, res) => {
     if (!name || !email || ! password) {
       throw Error('All fields must be filled')
     }
-    if (!validator.isEmail(email)) {
+    else if (!validator.isEmail(email)) {
       throw Error('Email is not valid')
     }
-    if (!validator.isStrongPassword(password)) {
+    else if (!validator.isStrongPassword(password)) {
       throw Error('Password is not strong enough')
     }
   
@@ -69,9 +69,42 @@ const registerUser = async (req, res) => {
   catch(err) {
     res.status(400).json({error: err.message})
   }
-} 
+}
+
+const updateUser = async (req, res) => {
+  const user_id = req.user._id;
+  const {name, email, password} = req.body;
+  const user = await User.findOne({ email })
+  const passMatch = await bcrypt.compare(password, user.password)
+
+  try {
+    if (!name || !email || !password) {
+      throw Error('All fields must be filled!')
+    }
+    else if (!passMatch) {
+      throw Error('Cannot use previous password!')
+    }
+    else if (!validator.isEmail(email)) {
+      throw Error('Email is not valid!')
+    }
+    else if (!validator.isStrongPassword(password)) {
+      throw Error('Password is not strong enough! Required: min-characters: 8, min-lowercase: 1, min-uppercase: 1, min-numbers: 1, min-symbols: 1')
+    }
+
+    const salt = await bcrypt.genSalt(10)          //salt basically adds extra strings to the end of the password before hashing for more pass protection
+    const hash = await bcrypt.hash(password, salt)
+
+    await User.updateOne({_id: user_id}, {$set: {name, email, password: hash, user_id}});
+    const token = createToken(user_id)
+    res.status(200).json({name, email, token});
+  } 
+  catch(err) {
+    res.status(400).json({error: err.message})
+  }
+}
 
 module.exports = {
   loginUser,
   registerUser,
+  updateUser
 }

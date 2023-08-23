@@ -16,8 +16,19 @@ export const usersApiSlice = apiSlice.injectEndpoints({         //creates the en
         method: 'POST',
         body: data,
       })
-    })
+    }),
+    updateUser: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/auth/update`,
+        headers: {
+          Authorization: `Bearer ${data.token}`,
+          withCredentials: true
+        },
+        method: 'PATCH',
+        body: data,
+      })
+    })  
   })
 })
 
-export const { useLoginMutation, useRegisterMutation } = usersApiSlice
+export const { useLoginMutation, useRegisterMutation, useUpdateUserMutation } = usersApiSlice

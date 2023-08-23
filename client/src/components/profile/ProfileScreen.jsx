@@ -2,38 +2,46 @@ import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
 import { setCredentials } from '../../slices/authSlice'
+import { useUpdateUserMutation } from '../../slices/usersApiSlice'
 import './ProfileScreen.css'
 
 function ProfileScreen() {
-    const [ name, setName ] = useState('')
-    const [ email, setEmail ] = useState('')
-    const [ password, setPassword ] = useState('')
-    const [ confirmPassword, setConfirmPassword ] = useState('')
+  const [ name, setName ] = useState('')
+  const [ email, setEmail ] = useState('')
+  const [ password, setPassword ] = useState('')
+  const [ confirmPassword, setConfirmPassword ] = useState('')
 
-    const dispatch = useDispatch()
-    const { user } = useSelector((state) => state.auth)
+  const dispatch = useDispatch()
+  const { user } = useSelector((state) => state.auth)
+    const [ update, { isLoading } ] = useUpdateUserMutation()
 
-    useEffect(() => {
-      setName(user.name)
-      setEmail(user.email)
-    }, [user.name, user.email])
+  useEffect(() => {
+    setName(() => user.name)
+    setEmail(() => user.email)
+  }, [user.name, user.email])
 
-    const submitUpdateHandler = async (e) => {
-      e.preventDefault()
-      if (!password || !confirmPassword) {
-        toast.error('All fields must be filled!')
-      }
-      else if (password !== confirmPassword) {
-        toast.error('Passwords do not match!')
-      }
-      try {
-        //send in updates and dispatch info
-      } catch(err) {
-        if (err.data && err.data.error) {
-          toast.error(err.data.error)
-        }
-      } 
+  const submitUpdateHandler = async (e) => {
+    e.preventDefault()
+    const token = user.token
+
+    if (!password || !confirmPassword) {
+      toast.error('All fields must be filled!')
+      return
     }
+    else if (password !== confirmPassword) {
+      toast.error('Passwords do not match!')
+      return
+    }
+
+    try {
+      const res = await update({name, email, password, token}).unwrap()
+      dispatch(setCredentials({...res}))
+    } catch(err) {
+      if (err.data && err.data.error) {
+        toast.error(err.data.error)
+      }
+    } 
+  }
 
   return (
     <div className='update-container'>
@@ -46,7 +54,7 @@ function ProfileScreen() {
               placeholder='Enter name'
               type='text'
               id='update-name'
-              value={name}
+              value={name || ''}
               onChange={(e) => setName(e.target.value)}
             />
           </div>
@@ -56,7 +64,7 @@ function ProfileScreen() {
             placeholder='Enter email'
             type='text'
             id='update-email'
-            value={email}
+            value={email || ''}
             onChange={(e) => setEmail(e.target.value)}
             />
           </div>
