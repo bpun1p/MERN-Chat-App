@@ -10,9 +10,9 @@
   align-items: flex-start;
   justify-content: space-between;
   cursor: pointer;
-  position: relative;
-  top: 40%;
-  left: 20%;
+  position: absolute;
+  top: 1%;
+  left: 1%;
   z-index: 10;
 }
 

@@ -5,7 +5,7 @@ import AccessNav from './components/accessNav/AccessNav'
 import MenuToggler from './components/menu/MenuToggler'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import ChatsScreen from './components/chats/ChatsScreen'
+import ChatsScreen from './components/chat/ChatScreen'
 import PrivateRoute from './components/utils/privateRoutes/PrivateRoute'
 import ProfileScreen from './components/profile/ProfileScreen'
 

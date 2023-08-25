@@ -1,0 +1,10 @@
+.chat-container {
+  height: 100vh;
+}
+
+.chat-body {
+  height: 100vh;
+  width: 100%;
+  background-color: rgb(219, 233, 246);
+  border: 1px solid black;
+}
