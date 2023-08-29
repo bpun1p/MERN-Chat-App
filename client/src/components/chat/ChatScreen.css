@@ -7,4 +7,34 @@
   width: 100%;
   background-color: rgb(219, 233, 246);
   border: 1px solid black;
+  padding: 2%;
+}
+
+.chat-message-container {
+  position: relative;
+  left: 3%;
+}
+
+.chat-text-container {
+  display: flex;
+  width: 90%;
+  justify-content: center;
+  position: relative;
+  top: 85%;
+  left: 3%;
+}
+
+#chat-textbox {
+  height: 55px;
+  margin-right: 1%;
+  padding-left: 1%;
+  border: 5px;
+}
+
+#textbox-submit {
+  background: none;
+  background-color: rgb(80, 137, 252);
+  width: 60px;
+  padding: 5px 10px;
+  border: none;
 }
