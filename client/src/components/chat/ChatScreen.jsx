@@ -3,6 +3,9 @@ import './ChatScreen.css'
 export default function ChatScreen () {
   return (
     <div className='chat-container'>
+      <div className='chat-contacts'>
+        contacts
+      </div>
       <div className='chat-body'>
         <div className='chat-message-container'>
           <div className='chat-message-body'>

@@ -1,7 +1,8 @@
 .accessNav-container {
   width: 10%;
-  float: right;
   padding: 1%;
+  position: absolute;
+  right: 1%;
 }
 
 .accessNav-login-register {
