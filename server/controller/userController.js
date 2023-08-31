@@ -67,6 +67,10 @@ const registerUser = async (req, res) => {
   }
 }
 
+const logoutUser = async (req, res) => {
+  res.clearCookie('token').status(200).json('logged out')
+}
+
 const updateUser = async (req, res) => {
   const user_id = req.user._id;
   const {name, email, password} = req.body;
@@ -102,5 +106,6 @@ const updateUser = async (req, res) => {
 module.exports = {
   loginUser,
   registerUser,
-  updateUser
+  updateUser, 
+  logoutUser
 }
