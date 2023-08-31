@@ -20,6 +20,7 @@ const loginUser = async (req, res) => {
     if (!user) {
       throw Error('Incorrect email')
     }
+    
     const name = user.name
     const passMatch = await bcrypt.compare(password, user.password)
   
@@ -55,16 +56,21 @@ const registerUser = async (req, res) => {
       throw Error('Email already exists')
     }
   
-    const salt = await bcrypt.genSalt(10)          //salt basically adds extra strings to the end of the password before hashing for more pass protection
+    const salt = await bcrypt.genSalt(10)
     const hash = await bcrypt.hash(password, salt)
   
     const user = await User.create({ name, email, password: hash })
     const token = createToken(user._id)
-    res.status(200).json({email, name, token})
+    res.cookie('token', token, {sameSite:'none', secure:true}).status(200).json({email, name, token})
+
   } 
   catch(err) {
     res.status(400).json({error: err.message})
   }
+}
+
+const logoutUser = async (req, res) => {
+  res.clearCookie('token').status(200).json('logged out')
 }
 
 const updateUser = async (req, res) => {
@@ -87,12 +93,12 @@ const updateUser = async (req, res) => {
       throw Error('Password is not strong enough! Required: min-characters: 8, min-lowercase: 1, min-uppercase: 1, min-numbers: 1, min-symbols: 1')
     }
 
-    const salt = await bcrypt.genSalt(10)          //salt basically adds extra strings to the end of the password before hashing for more pass protection
+    const salt = await bcrypt.genSalt(10)
     const hash = await bcrypt.hash(password, salt)
 
     await User.updateOne({_id: user_id}, {$set: {name, email, password: hash, user_id}});
     const token = createToken(user_id)
-    res.status(200).json({name, email, token});
+    res.cookie('token', token, {sameSite:'none', secure:true}).status(200).json({email, name, token})
   } 
   catch(err) {
     res.status(400).json({error: err.message})
@@ -102,5 +108,6 @@ const updateUser = async (req, res) => {
 module.exports = {
   loginUser,
   registerUser,
-  updateUser
+  updateUser, 
+  logoutUser
 }
