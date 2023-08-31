@@ -1,6 +1,20 @@
 import './ChatScreen.css'
+import { useEffect, useState } from 'react'
 
 export default function ChatScreen () {
+  const [ ws, setWs ] = useState(null)
+
+  useEffect(() => {
+    const ws = new WebSocket('ws://localhost:3000')
+    setWs(ws)
+    ws.addEventListener('message', handleMessage)
+  }, [])
+
+  const handleMessage = (e) => {
+    e.preventDefault()
+    console.log('new message', e)
+  }
+
   return (
     <div className='chat-container'>
       <div className='chat-contacts'>
