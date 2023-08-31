@@ -14,21 +14,21 @@ export const usersApiSlice = apiSlice.injectEndpoints({         //creates the en
     register: builder.mutation({
       query: (data) => ({
         url: `${USERS_URL}/auth/register`,
-        headers: {
-          withCredentials: true
-        },
         method: 'POST',
         body: data,
+        credentials: 'include'
+      })
+    }),
+    logout: builder.mutation({
+      query: () => ({
+        url: `${USERS_URL}/auth/logout`,
+        method: 'POST',
         credentials: 'include'
       })
     }),
     updateUser: builder.mutation({
       query: (data) => ({
         url: `${USERS_URL}/auth/update`,
-        headers: {
-          Authorization: `Bearer ${data.token}`,
-          withCredentials: true
-        },
         method: 'PATCH',
         body: data,
         credentials: 'include'
@@ -37,4 +37,4 @@ export const usersApiSlice = apiSlice.injectEndpoints({         //creates the en
   })
 })
 
-export const { useLoginMutation, useRegisterMutation, useUpdateUserMutation } = usersApiSlice
+export const { useLoginMutation, useRegisterMutation, useUpdateUserMutation, useLogoutMutation } = usersApiSlice
