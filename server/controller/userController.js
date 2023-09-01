@@ -3,8 +3,8 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const validator = require('validator')
 
-const createToken = (_id) => {
-  return jwt.sign({_id}, process.env.SECRET, { expiresIn: '7d'})
+const createToken = (_id, email, name) => {
+  return jwt.sign({_id, email, name}, process.env.SECRET, { expiresIn: '7d'})
 }
 
 const loginUser = async (req, res) => {
@@ -27,8 +27,7 @@ const loginUser = async (req, res) => {
     if (!passMatch) {
       throw Error('Incorrect password')
     }
-
-    const token = createToken(user._id)
+    const token = createToken(user._id, email, name)
     res.cookie('token', token, {sameSite:'none', secure:true}).status(200).json({email, name, token})
   } 
   catch(err) {
@@ -60,7 +59,7 @@ const registerUser = async (req, res) => {
     const hash = await bcrypt.hash(password, salt)
   
     const user = await User.create({ name, email, password: hash })
-    const token = createToken(user._id)
+    const token = createToken(user._id, email, name)
     res.cookie('token', token, {sameSite:'none', secure:true}).status(200).json({email, name, token})
 
   } 
@@ -97,7 +96,7 @@ const updateUser = async (req, res) => {
     const hash = await bcrypt.hash(password, salt)
 
     await User.updateOne({_id: user_id}, {$set: {name, email, password: hash, user_id}});
-    const token = createToken(user_id)
+    const token = createToken(user_id, email, name)
     res.cookie('token', token, {sameSite:'none', secure:true}).status(200).json({email, name, token})
   } 
   catch(err) {
