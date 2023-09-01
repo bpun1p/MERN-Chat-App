@@ -1,24 +1,42 @@
 import './ChatScreen.css'
 import { useEffect, useState } from 'react'
+import { nanoid } from 'nanoid'
 
 export default function ChatScreen () {
   const [ ws, setWs ] = useState(null)
-
+  const [isOnline, setIsOnline] = useState([])
   useEffect(() => {
     const ws = new WebSocket('ws://localhost:3000')
     setWs(ws)
     ws.addEventListener('message', handleMessage)
   }, [])
 
-  const handleMessage = (e) => {
+  const showOnlineUsers = (usersArr) => {
+    const users = {}
+    usersArr.forEach(({id, email, name}) => {
+      users[id] = name
+    })
+    setIsOnline(users)
+  }
+
+  const handleMessage = async (e) => {
     e.preventDefault()
-    console.log('new message', e)
+    const onlineData = JSON.parse(e.data)
+    if ('online' in onlineData) {
+      console.log(onlineData)
+      showOnlineUsers(onlineData.online)
+    }
   }
 
   return (
     <div className='chat-container'>
       <div className='chat-contacts'>
-        contacts
+        {isOnline.length !== 0 ? Object.keys(isOnline).map(name => (
+          <div key={nanoid()}>{isOnline[name]}</div>
+        ))
+          :
+          null
+        }
       </div>
       <div className='chat-body'>
         <div className='chat-message-container'>
