@@ -19,7 +19,7 @@ export default function ChatScreen () {
         <div 
           className='user-container' 
           key={nanoid()}
-          onClick={() => setIsSelectedUser(() => userId)}
+          onClick={() => setIsSelectedUser(userId)}
           style={(userId === isSelectedUser ? {backgroundColor : 'rgb(219,233,246)'}: {backgroundColor : ''})}
         >
           <div id='user'>{isOnline[userId]}</div>
@@ -59,7 +59,7 @@ export default function ChatScreen () {
       <div className='chat-body'>
         <div className='chat-message-container'>
           <div className='chat-message-body'>
-            <div>Messages with selected person</div>
+            {!isSelectedUser ? <span id='no-contacts-selected'>Start Chating Now!</span> : null}
           </div>
         </div>
         <div className='chat-text-container'>
