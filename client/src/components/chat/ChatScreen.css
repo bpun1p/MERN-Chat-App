@@ -4,10 +4,28 @@
   width: 100%;
 }
 
-.chat-contacts {
+.chat-contacts-container {
   width: 21%;
 }
 
+.chat-header {
+  position: relative;
+  top: 12%;
+  padding: 3%;
+  margin: 0;
+  font-size: 3rem;
+}
+
+.chat-contacts-body {
+  height: 100%;
+  position: relative;
+  top: 12%;
+}
+
+#user {
+  padding: 5%;
+  font-size: 1.5rem;
+}
 
 .chat-body {
   height: 100vh;
@@ -43,4 +61,17 @@
   width: 60px;
   padding: 5px 10px;
   border: none;
+}
+
+.user-container {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.dot {
+  height: 15px;
+  width: 15px;
+  background-color: #5fec6b;
+  border-radius: 50%;
 }

@@ -4,18 +4,39 @@ import { nanoid } from 'nanoid'
 
 export default function ChatScreen () {
   const [ ws, setWs ] = useState(null)
-  const [isOnline, setIsOnline] = useState([])
+  const [isOnline, setIsOnline] = useState(null)
+  const [ isSelectedUser, setIsSelectedUser ] = useState('')
+  
   useEffect(() => {
     const ws = new WebSocket('ws://localhost:3000')
     setWs(ws)
     ws.addEventListener('message', handleMessage)
   }, [])
 
+  const displayOnlineUsers = () => {
+    if (isOnline) {
+      const onlineUsersJSX =  Object.keys(isOnline).map(userId => (
+        <div 
+          className='user-container' 
+          key={nanoid()}
+          onClick={() => setIsSelectedUser(() => userId)}
+          style={(userId === isSelectedUser ? {backgroundColor : 'rgb(219,233,246)'}: {backgroundColor : ''})}
+        >
+          <div id='user'>{isOnline[userId]}</div>
+          <span className='dot'></span>
+        </div>
+      ))
+      return(onlineUsersJSX)
+    }
+  }
+
   const showOnlineUsers = (usersArr) => {
     const users = {}
-    usersArr.forEach(({id, email, name}) => {
-      users[id] = name
-    })
+    if (usersArr.length > 0) { 
+      usersArr.forEach(({id, name}) => {
+        users[id] = name
+      })
+    }
     setIsOnline(users)
   }
 
@@ -23,20 +44,17 @@ export default function ChatScreen () {
     e.preventDefault()
     const onlineData = JSON.parse(e.data)
     if ('online' in onlineData) {
-      console.log(onlineData)
       showOnlineUsers(onlineData.online)
     }
   }
 
   return (
     <div className='chat-container'>
-      <div className='chat-contacts'>
-        {isOnline.length !== 0 ? Object.keys(isOnline).map(name => (
-          <div key={nanoid()}>{isOnline[name]}</div>
-        ))
-          :
-          null
-        }
+      <div className='chat-contacts-container'>
+        <h3 className='chat-header'>Chats</h3>
+        <div className='chat-contacts-body'>
+          {displayOnlineUsers()}
+        </div>
       </div>
       <div className='chat-body'>
         <div className='chat-message-container'>
