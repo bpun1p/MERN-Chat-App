@@ -5,7 +5,8 @@ const userRoutes = require('./routes/userRoutes')
 require('dotenv').config()
 const ws = require('ws')
 const jwt = require('jsonwebtoken')
-const User = require('./models/userModel');
+// const User = require('./models/userModel')
+const Message = require('./models/messageModel')
 
 //express app
 const app = express()
@@ -41,8 +42,8 @@ wsServer.on('connection', (connection, req) => {
           if (err) {
             throw err
           }
-          const { _id, email, name } = userData
-          connection._id = _id
+          const { user_id, email, name } = userData
+          connection._id = user_id
           connection.email = email
           connection.name = name
         })
@@ -50,13 +51,23 @@ wsServer.on('connection', (connection, req) => {
     }
   }
 
-  connection.on('message', (message) => {
+  connection.on('message', async (message) => {
     const messageData = JSON.parse(message.toString())
     const { user, text } = messageData
     if (user && text) {
+      const messageDoc = await Message.create({
+        sender: connection._id,
+        reciever: user,
+        text
+      });
       [...wsServer.clients]
         .filter(client => client._id === user)
-        .forEach(client => client.send(JSON.stringify({text})))
+        .forEach(client => client.send(JSON.stringify({
+          text, 
+          sender: connection._id,
+          reciever: user,
+          id: messageDoc._id
+        })))
     }
   });
 
