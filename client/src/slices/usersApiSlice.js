@@ -8,6 +8,7 @@ export const usersApiSlice = apiSlice.injectEndpoints({         //creates the en
         url: `${USERS_URL}/auth/login`,
         method: 'POST',
         body: data,
+        credentials: 'include'
       })
     }),
     register: builder.mutation({
@@ -15,20 +16,25 @@ export const usersApiSlice = apiSlice.injectEndpoints({         //creates the en
         url: `${USERS_URL}/auth/register`,
         method: 'POST',
         body: data,
+        credentials: 'include'
+      })
+    }),
+    logout: builder.mutation({
+      query: () => ({
+        url: `${USERS_URL}/auth/logout`,
+        method: 'POST',
+        credentials: 'include'
       })
     }),
     updateUser: builder.mutation({
       query: (data) => ({
         url: `${USERS_URL}/auth/update`,
-        headers: {
-          Authorization: `Bearer ${data.token}`,
-          withCredentials: true
-        },
         method: 'PATCH',
         body: data,
+        credentials: 'include'
       })
     })  
   })
 })
 
-export const { useLoginMutation, useRegisterMutation, useUpdateUserMutation } = usersApiSlice
+export const { useLoginMutation, useRegisterMutation, useUpdateUserMutation, useLogoutMutation } = usersApiSlice

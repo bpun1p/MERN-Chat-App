@@ -4,30 +4,60 @@
   width: 100%;
 }
 
-.chat-contacts {
+.chat-contacts-container {
   width: 21%;
+  height: 100%;
 }
 
+.chat-header {
+  position: relative;
+  top: 12%;
+  padding: 3%;
+  margin: 0;
+  font-size: 3rem;
+}
+
+.chat-contacts-body {
+  height: 75%;
+  position: relative;
+  top: 12%;
+}
+
+#user {
+  padding: 5%;
+  font-size: 1.5rem;
+}
 
 .chat-body {
-  height: 100vh;
+  height: 100%;
   width: 79%;
   background-color: rgb(219, 233, 246);
-  padding: 2%;
+  padding: 0 2%;
+  overflow: hidden;
 }
 
 .chat-message-container {
   position: relative;
   left: 3%;
+  height: 85%;
+  width: 90%;
+  overflow-x: scroll;
+}
+
+.chat-message-body {
+  height: 100%;
+
+  display: inline;
 }
 
 .chat-text-container {
   display: flex;
-  width: 95%;
   justify-content: center;
-  position: relative;
-  top: 85%;
-  left: 3%;
+  position: absolute;
+  left: 25%;
+  bottom: 5%;
+  width: 70%;
+  z-index: 99999;
 }
 
 #chat-textbox {
@@ -43,4 +73,35 @@
   width: 60px;
   padding: 5px 10px;
   border: none;
+  cursor: pointer;
+}
+
+.user-container {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.dot {
+  height: 15px;
+  width: 15px;
+  background-color: #5fec6b;
+  border-radius: 50%;
+}
+
+#no-contacts-selected {
+  position: relative;
+  left: 40%;
+  top: 50%;
+}
+
+#message {
+  font-size: 1.5rem;
+  border-radius: 5px;
+  padding: 0.15% 0.5%;
+}
+
+.message-container {
+  width: 95%;
+  padding: 1%;
 }

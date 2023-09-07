@@ -2,6 +2,7 @@ import './AccessNav.css'
 import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { clearCredentials } from '../../slices/authSlice'
+import { useLogoutMutation } from '../../slices/usersApiSlice'
 import { useNavigate } from 'react-router-dom'
 
 
@@ -9,8 +10,10 @@ export default function AccessNav() {
   const { user } = useSelector((state) => state.auth)
   const navigate = useNavigate()
   const dispatch = useDispatch()
+  const [logout, { isLoading }] = useLogoutMutation()
 
   const handleLogoutClicked = () => {
+    logout()
     dispatch(clearCredentials())
     navigate('/access')
   }

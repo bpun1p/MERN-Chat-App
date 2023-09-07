@@ -13,7 +13,7 @@ function ProfileScreen() {
 
   const dispatch = useDispatch()
   const { user } = useSelector((state) => state.auth)
-    const [ update, { isLoading } ] = useUpdateUserMutation()
+  const [ update, { isLoading } ] = useUpdateUserMutation()
 
   useEffect(() => {
     setName(() => user.name)
@@ -22,7 +22,6 @@ function ProfileScreen() {
 
   const submitUpdateHandler = async (e) => {
     e.preventDefault()
-    const token = user.token
 
     if (!password || !confirmPassword) {
       toast.error('All fields must be filled!')
@@ -34,7 +33,7 @@ function ProfileScreen() {
     }
 
     try {
-      const res = await update({name, email, password, token}).unwrap()
+      const res = await update({name, email, password}).unwrap()
       dispatch(setCredentials({...res}))
     } catch(err) {
       if (err.data && err.data.error) {
