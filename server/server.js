@@ -30,6 +30,7 @@ const server = app.listen(PORT, () => console.log(`Listening at: http://localhos
 
 const wsServer = new ws.WebSocketServer({server})
 wsServer.on('connection', (connection, req) => {
+  //read user's data from the cookie before handling connection
   const cookies = req.headers.cookie
   if (cookies) {
     const cookieString = cookies.split(';').find(string => string.startsWith('token='))
@@ -40,7 +41,6 @@ wsServer.on('connection', (connection, req) => {
           if (err) {
             throw err
           }
-          console.log(userData)
           const { _id, email, name } = userData
           connection._id = _id
           connection.email = email
@@ -49,6 +49,18 @@ wsServer.on('connection', (connection, req) => {
       }
     }
   }
+
+  connection.on('message', (message) => {
+    const messageData = JSON.parse(message.toString())
+    const { user, text } = messageData
+    if (user && text) {
+      [...wsServer.clients]
+        .filter(client => client._id === user)
+        .forEach(client => client.send(JSON.stringify({text})))
+    }
+  });
+
+  // notify about online users when someone connects
   [...wsServer.clients].forEach(client => {
     client.send(JSON.stringify(
       {

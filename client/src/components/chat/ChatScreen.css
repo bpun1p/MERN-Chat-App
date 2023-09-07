@@ -39,19 +39,25 @@
 .chat-message-container {
   position: relative;
   left: 3%;
-  height: 90%;
+  height: 85%;
+  width: 90%;
+  overflow-x: scroll;
 }
 
 .chat-message-body {
   height: 100%;
+
+  display: inline;
 }
 
 .chat-text-container {
   display: flex;
-  width: 95%;
   justify-content: center;
-  position: relative;
-  left: 3%;
+  position: absolute;
+  left: 25%;
+  bottom: 5%;
+  width: 70%;
+  z-index: 99999;
 }
 
 #chat-textbox {
@@ -67,6 +73,7 @@
   width: 60px;
   padding: 5px 10px;
   border: none;
+  cursor: pointer;
 }
 
 .user-container {
@@ -84,6 +91,17 @@
 
 #no-contacts-selected {
   position: relative;
-  left: 45%;
+  left: 40%;
   top: 50%;
+}
+
+#message {
+  font-size: 1.5rem;
+  border-radius: 5px;
+  padding: 0.15% 0.5%;
+}
+
+.message-container {
+  width: 95%;
+  padding: 1%;
 }

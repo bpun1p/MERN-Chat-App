@@ -1,21 +1,57 @@
 import './ChatScreen.css'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { nanoid } from 'nanoid'
+import { toast } from 'react-toastify'
+import { useSelector } from 'react-redux'
+import { uniqBy } from 'lodash'
 
 export default function ChatScreen () {
   const [ ws, setWs ] = useState(null)
-  const [isOnline, setIsOnline] = useState(null)
+  const [ isOnline, setIsOnline ] = useState(null)
   const [ isSelectedUser, setIsSelectedUser ] = useState('')
-  
+  const [ newMessage, setNewMessage ] = useState('')
+  const [ messages, setMessages ] = useState([])
+  const { user } = useSelector((state) => state.auth)
+  const textMessage = useRef()
+
   useEffect(() => {
     const ws = new WebSocket('ws://localhost:3000')
     setWs(ws)
-    ws.addEventListener('message', handleMessage)
+    ws.addEventListener('message', handleWsMessage)
   }, [])
+
+  useEffect(() => {
+    scrollIntoView()
+  }, [messages])
+
+  const displayMessages = () => {
+    const myId = user.user_id
+    if (isSelectedUser && messages.length > 0) {
+      const messagesWithoutDupes = uniqBy(messages, 'id')
+      const displayMessagesJSX = messagesWithoutDupes.map(message => (
+        <>
+          <div key={nanoid()} 
+            className='message-container'
+            style={(message.sender === myId ? {textAlign: 'right'} : {textAlign: 'left'})}
+          >
+            <span id='message'
+              style={(message.sender === myId ? {backgroundColor: '#b9bcb9'} : {backgroundColor: '#82baf3'})}
+              ref={textMessage}
+            >
+              {message.text}
+            </span>
+          </div>
+        </>
+      ))
+      return(displayMessagesJSX)
+    }
+  }
 
   const displayOnlineUsers = () => {
     if (isOnline) {
-      const onlineUsersJSX =  Object.keys(isOnline).map(userId => (
+      const onlineUsersExclMyself = {...isOnline}
+      delete onlineUsersExclMyself[user.user_id]
+      const onlineUsersJSX = Object.keys(onlineUsersExclMyself).map(userId => (
         <div 
           className='user-container' 
           key={nanoid()}
@@ -40,11 +76,41 @@ export default function ChatScreen () {
     setIsOnline(users)
   }
 
-  const handleMessage = async (e) => {
+  const handleWsMessage = async (e) => {
     e.preventDefault()
     const onlineData = JSON.parse(e.data)
     if ('online' in onlineData) {
       showOnlineUsers(onlineData.online)
+    } 
+    else if ('text' in onlineData)(
+      setMessages(prev => ([...prev, {...onlineData}]))
+    )
+  }
+
+  const scrollIntoView = () => {
+    const divTextMessage = textMessage.current
+    if (divTextMessage) {
+      divTextMessage.scrollIntoView({behaviour: 'smooth'})
+    }
+  }
+
+  const sendMessage = (e) => {
+    e.preventDefault()
+    if (newMessage !== '') {
+      ws.send(JSON.stringify({
+        user: isSelectedUser,
+        text: newMessage
+      }))
+      setMessages(prev => ([...prev, {
+        text: newMessage, 
+        sender: user.user_id,
+        reciever: isSelectedUser,
+        id: Date.now()
+      }]))
+      setNewMessage('')
+      scrollIntoView()
+    } else {
+      toast.error('Filled in field required')
     }
   }
 
@@ -60,16 +126,24 @@ export default function ChatScreen () {
         <div className='chat-message-container'>
           <div className='chat-message-body'>
             {!isSelectedUser ? <span id='no-contacts-selected'>Start Chating Now!</span> : null}
+            {displayMessages()}
           </div>
         </div>
-        <div className='chat-text-container'>
-          <input type='text' placeholder='Type your message here' id='chat-textbox'/>
-          <button type='submit' id='textbox-submit'>
-            <svg xmlns='http://www.w3.org/2000/svg' fill='none' color='white' viewBox='0 0 24 24' strokeWidth={1.5} stroke='currentColor' className='w-6 h-6'>
-              <path strokeLinecap='round' strokeLinejoin='round' d='M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5' />
-            </svg>
-          </button>
-        </div>
+        {!!isSelectedUser && 
+          <form className='chat-text-container' onSubmit={sendMessage}>
+            <input type='text' 
+            placeholder='Type your message here' 
+            id='chat-textbox'
+            value={newMessage}
+            onChange={e => setNewMessage(e.target.value)}
+            />
+            <button type='submit' id='textbox-submit'>
+              <svg xmlns='http://www.w3.org/2000/svg' fill='none' color='white' viewBox='0 0 24 24' strokeWidth={1.5} stroke='currentColor' className='w-6 h-6'>
+                <path strokeLinecap='round' strokeLinejoin='round' d='M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5' />
+              </svg>
+            </button>
+          </form>
+        }
       </div>
     </div>
   )
