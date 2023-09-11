@@ -3,6 +3,7 @@ import { useEffect, useState, useRef } from 'react'
 import { nanoid } from 'nanoid'
 import { toast } from 'react-toastify'
 import { useSelector } from 'react-redux'
+import { useFetchMessagesMutation } from '../../slices/chatsApiSlice'
 import { uniqBy } from 'lodash'
 
 export default function ChatScreen () {
@@ -12,6 +13,7 @@ export default function ChatScreen () {
   const [ newMessage, setNewMessage ] = useState('')
   const [ messages, setMessages ] = useState([])
   const { user } = useSelector((state) => state.auth)
+  const [ fetchMessages, { Loading } ] = useFetchMessagesMutation()
   const textMessage = useRef()
 
   useEffect(() => {
@@ -24,13 +26,24 @@ export default function ChatScreen () {
     scrollIntoView()
   }, [messages])
 
+  useEffect(() => {
+    if (isSelectedUser) {
+      receiveMessages(isSelectedUser)
+    }
+  }, [isSelectedUser])
+
+  const receiveMessages = async (selectedUserId) => {
+    const res = await fetchMessages({selectedUserId})
+    console.log(res)
+  }
+
   const displayMessages = () => {
     const myId = user.user_id
     if (isSelectedUser && messages.length > 0) {
       const messagesWithoutDupes = uniqBy(messages, 'id')
       const displayMessagesJSX = messagesWithoutDupes.map(message => (
-        <>
-          <div key={nanoid()} 
+        <div key={nanoid()}>
+          <div
             className='message-container'
             style={(message.sender === myId ? {textAlign: 'right'} : {textAlign: 'left'})}
           >
@@ -41,7 +54,7 @@ export default function ChatScreen () {
               {message.text}
             </span>
           </div>
-        </>
+        </div>
       ))
       return(displayMessagesJSX)
     }
@@ -79,6 +92,7 @@ export default function ChatScreen () {
   const handleWsMessage = async (e) => {
     e.preventDefault()
     const onlineData = JSON.parse(e.data)
+    console.log(onlineData)
     if ('online' in onlineData) {
       showOnlineUsers(onlineData.online)
     } 
@@ -104,7 +118,7 @@ export default function ChatScreen () {
       setMessages(prev => ([...prev, {
         text: newMessage, 
         sender: user.user_id,
-        reciever: isSelectedUser,
+        receiver: isSelectedUser,
         id: Date.now()
       }]))
       setNewMessage('')
