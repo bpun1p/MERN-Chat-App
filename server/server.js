@@ -2,10 +2,10 @@ const express = require('express')
 const PORT = process.env.PORT || 3000
 const mongoose = require('mongoose')
 const userRoutes = require('./routes/userRoutes')
+const messagesRoutes = require('./routes/messageRoutes')
 require('dotenv').config()
 const ws = require('ws')
 const jwt = require('jsonwebtoken')
-// const User = require('./models/userModel')
 const Message = require('./models/messageModel')
 
 //express app
@@ -57,7 +57,7 @@ wsServer.on('connection', (connection, req) => {
     if (user && text) {
       const messageDoc = await Message.create({
         sender: connection._id,
-        reciever: user,
+        receiver: user,
         text
       });
       [...wsServer.clients]
@@ -65,7 +65,7 @@ wsServer.on('connection', (connection, req) => {
         .forEach(client => client.send(JSON.stringify({
           text, 
           sender: connection._id,
-          reciever: user,
+          receiver: user,
           id: messageDoc._id
         })))
     }
@@ -87,3 +87,4 @@ wsServer.on('connection', (connection, req) => {
 
 //Api routes
 app.use('/auth', userRoutes)
+app.use('/messages', messagesRoutes)
