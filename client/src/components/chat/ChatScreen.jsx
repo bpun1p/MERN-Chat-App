@@ -17,30 +17,40 @@ export default function ChatScreen () {
   const textMessage = useRef()
 
   useEffect(() => {
-    const ws = new WebSocket('ws://localhost:3000')
-    setWs(ws)
-    ws.addEventListener('message', handleWsMessage)
+    connectToWs()
   }, [])
 
   useEffect(() => {
     scrollIntoView()
   }, [messages])
 
-  useEffect(() => {
+  useEffect(() => { 
     if (isSelectedUser) {
       receiveMessages(isSelectedUser)
     }
   }, [isSelectedUser])
 
+  const connectToWs = () => {
+    const ws = new WebSocket('ws://localhost:3000')
+    setWs(ws)
+    ws.addEventListener('message', handleWsMessage)
+    ws.addEventListener('close', () => {
+      setTimeout(() => {
+        console.log('Disconnected; Attempting to reconnect')
+        connectToWs()
+      }, 1000)
+    })
+  }
+
   const receiveMessages = async (selectedUserId) => {
     const res = await fetchMessages({selectedUserId})
-    console.log(res)
+    setMessages(res.data)
   }
 
   const displayMessages = () => {
     const myId = user.user_id
     if (isSelectedUser && messages.length > 0) {
-      const messagesWithoutDupes = uniqBy(messages, 'id')
+      const messagesWithoutDupes = uniqBy(messages, '_id')
       const displayMessagesJSX = messagesWithoutDupes.map(message => (
         <div key={nanoid()}>
           <div
@@ -91,14 +101,16 @@ export default function ChatScreen () {
 
   const handleWsMessage = async (e) => {
     e.preventDefault()
-    const onlineData = JSON.parse(e.data)
-    console.log(onlineData)
-    if ('online' in onlineData) {
-      showOnlineUsers(onlineData.online)
-    } 
-    else if ('text' in onlineData)(
-      setMessages(prev => ([...prev, {...onlineData}]))
-    )
+    if (e.data.length > 0) {
+      const onlineData = JSON.parse(e.data)
+      console.log('Connected')
+      if ('online' in onlineData) {
+        showOnlineUsers(onlineData.online)
+      } 
+      else if ('text' in onlineData)(
+        setMessages(prev => ([...prev, {...onlineData}]))
+      )
+    }
   }
 
   const scrollIntoView = () => {
@@ -119,7 +131,7 @@ export default function ChatScreen () {
         text: newMessage, 
         sender: user.user_id,
         receiver: isSelectedUser,
-        id: Date.now()
+        _id: Date.now()
       }]))
       setNewMessage('')
       scrollIntoView()
