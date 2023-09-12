@@ -22,6 +22,14 @@ export const usersApiSlice = apiSlice.injectEndpoints({         //creates the en
         credentials: 'include'
       })
     }),
+    logout: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/auth/logout`,
+        method: 'POST',
+        body: data,
+        credentials: 'include'
+      })
+    }),
     updateUser: builder.mutation({
       query: (data) => ({
         url: `${USERS_URL}/auth/update`,
@@ -37,4 +45,4 @@ export const usersApiSlice = apiSlice.injectEndpoints({         //creates the en
   })
 })
 
-export const { useLoginMutation, useRegisterMutation, useUpdateUserMutation } = usersApiSlice
+export const { useLoginMutation, useRegisterMutation, useUpdateUserMutation, useLogoutMutation } = usersApiSlice

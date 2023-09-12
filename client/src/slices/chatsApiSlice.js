@@ -5,7 +5,7 @@ export const chatsApiSlice = apiSlice.injectEndpoints({         //creates the en
   endpoints: (builder) => ({
     fetchMessages: builder.mutation({
       query: (data) => ({
-        url: `${USERS_URL}/messages/${data.selectedUserId}`,
+        url: `${CHATS_URL}/messages/${data.selectedUserId}`,
         method: 'GET',
         credentials: 'include'
       })
