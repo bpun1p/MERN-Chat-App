@@ -25,6 +25,7 @@ const cors = require('cors')
 app.use(cors({origin: ['http://localhost:5173', 'https://bpun1p-chat-app.onrender.com'], credentials: true}))
 
 //connect to mongodb
+console.log(process.env.DB_URI)
 mongoose.connect(process.env.DB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
 
 const server = app.listen(PORT, () => console.log(`Listening at: http://localhost:${PORT}`))
