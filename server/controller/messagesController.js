@@ -20,17 +20,15 @@ const getSelectedUserMessages = async (req, res) => {
     const messages = await Message.find({
       sender: {$in: [selectedUserId, myUserId]},
       receiver: {$in: [selectedUserId, myUserId]}
-    }).sort({createdAt: -1})
+    }).sort({createdAt: 1})
     
-    console.log(messages)
+    res.status(200).json(messages)
   } 
   catch(err) {
-    res.json({message: 'err'})
+    res.json({message: err})
   }
-
-  
 }
 
-module.exports = {
+module.exports = { 
   getSelectedUserMessages
-}
+}  

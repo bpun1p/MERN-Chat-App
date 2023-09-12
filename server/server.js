@@ -66,7 +66,7 @@ wsServer.on('connection', (connection, req) => {
           text, 
           sender: connection._id,
           receiver: user,
-          id: messageDoc._id
+          _id: messageDoc._id
         })))
     }
   });
