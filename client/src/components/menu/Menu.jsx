@@ -1,4 +1,4 @@
-import './menu.css'
+import './Menu.css'
 import '../utils/buttons/settingsClass.css'
 import { Link } from 'react-router-dom'
 import AvatarIcon from '../../assets/images/avatarImage.png'
