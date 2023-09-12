@@ -10,12 +10,16 @@ const tokenValidator = async (req, res, next) => {
   };
  
   try {
-    const {_id} = jwt.verify(token, process.env.SECRET)
-    req.user = await User.findOne({_id}).select('_id')
+    const tokenData = jwt.verify(token, process.env.SECRET)
+    const userData = await User.findOne({_id: tokenData.user_id})
+    if (!userData) {
+      res.status(401).json({error: 'user not found'})
+    }
+
     next()
   }
   catch(err) {
-    console.log(error);
+    console.log(err);
     res.status(401).json({error: 'request is not authorized'})
   }
 }

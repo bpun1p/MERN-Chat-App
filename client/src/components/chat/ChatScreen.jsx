@@ -3,6 +3,7 @@ import { useEffect, useState, useRef } from 'react'
 import { nanoid } from 'nanoid'
 import { toast } from 'react-toastify'
 import { useSelector } from 'react-redux'
+import { useFetchMessagesMutation } from '../../slices/chatsApiSlice'
 import { uniqBy } from 'lodash'
 
 export default function ChatScreen () {
@@ -12,25 +13,47 @@ export default function ChatScreen () {
   const [ newMessage, setNewMessage ] = useState('')
   const [ messages, setMessages ] = useState([])
   const { user } = useSelector((state) => state.auth)
+  const [ fetchMessages, { Loading } ] = useFetchMessagesMutation()
   const textMessage = useRef()
 
   useEffect(() => {
-    const ws = new WebSocket('ws://localhost:3000')
-    setWs(ws)
-    ws.addEventListener('message', handleWsMessage)
+    connectToWs()
   }, [])
 
   useEffect(() => {
     scrollIntoView()
   }, [messages])
 
+  useEffect(() => { 
+    if (isSelectedUser) {
+      receiveMessages(isSelectedUser)
+    }
+  }, [isSelectedUser])
+
+  const connectToWs = () => {
+    const ws = new WebSocket('ws://localhost:3000')
+    setWs(ws)
+    ws.addEventListener('message', handleWsMessage)
+    ws.addEventListener('close', () => {
+      setTimeout(() => {
+        console.log('Disconnected; Attempting to reconnect')
+        connectToWs()
+      }, 1000)
+    })
+  }
+
+  const receiveMessages = async (selectedUserId) => {
+    const res = await fetchMessages({selectedUserId})
+    setMessages(res.data)
+  }
+
   const displayMessages = () => {
     const myId = user.user_id
     if (isSelectedUser && messages.length > 0) {
-      const messagesWithoutDupes = uniqBy(messages, 'id')
+      const messagesWithoutDupes = uniqBy(messages, '_id')
       const displayMessagesJSX = messagesWithoutDupes.map(message => (
-        <>
-          <div key={nanoid()} 
+        <div key={nanoid()}>
+          <div
             className='message-container'
             style={(message.sender === myId ? {textAlign: 'right'} : {textAlign: 'left'})}
           >
@@ -41,7 +64,7 @@ export default function ChatScreen () {
               {message.text}
             </span>
           </div>
-        </>
+        </div>
       ))
       return(displayMessagesJSX)
     }
@@ -78,13 +101,16 @@ export default function ChatScreen () {
 
   const handleWsMessage = async (e) => {
     e.preventDefault()
-    const onlineData = JSON.parse(e.data)
-    if ('online' in onlineData) {
-      showOnlineUsers(onlineData.online)
-    } 
-    else if ('text' in onlineData)(
-      setMessages(prev => ([...prev, {...onlineData}]))
-    )
+    if (e.data.length > 0) {
+      const onlineData = JSON.parse(e.data)
+      console.log('Connected')
+      if ('online' in onlineData) {
+        showOnlineUsers(onlineData.online)
+      } 
+      else if ('text' in onlineData)(
+        setMessages(prev => ([...prev, {...onlineData}]))
+      )
+    }
   }
 
   const scrollIntoView = () => {
@@ -104,8 +130,8 @@ export default function ChatScreen () {
       setMessages(prev => ([...prev, {
         text: newMessage, 
         sender: user.user_id,
-        reciever: isSelectedUser,
-        id: Date.now()
+        receiver: isSelectedUser,
+        _id: Date.now()
       }]))
       setNewMessage('')
       scrollIntoView()
