@@ -2,6 +2,7 @@ import Register from './register/Register'
 import Login from './login/Login'
 import './AccessPage.css'
 import { useSelector } from 'react-redux'
+import { Navigate } from 'react-router-dom'
 
 export default function Access() {
   const { user } = useSelector((state) => state.auth)
@@ -16,7 +17,7 @@ export default function Access() {
             </div>
           </div>
         </>
-      : null}
+      : <Navigate to='/chats'/>}
     </>
   )
 }

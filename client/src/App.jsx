@@ -20,6 +20,7 @@ export default function App() {
         <Route path='' element={<PrivateRoute/>}>
           <Route path='/chats' element={<ChatsScreen/>}/>
           <Route path='/profile' element={<ProfileScreen/>}/>
+          <Route path='/' element={<ChatsScreen/>}/>
         </Route>
       </Routes>
     </BrowserRouter>
