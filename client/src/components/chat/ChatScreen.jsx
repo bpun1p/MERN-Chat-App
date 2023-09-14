@@ -72,6 +72,9 @@ export default function ChatScreen () {
 
   const displayOnlineUsers = () => {
     if (isOnline) {
+      if ('undefined' in isOnline) {
+        delete isOnline['undefined']
+      }
       const onlineUsersExclMyself = {...isOnline}
       delete onlineUsersExclMyself[user.user_id]
       const onlineUsersJSX = Object.keys(onlineUsersExclMyself).map(userId => (
