@@ -1,11 +1,11 @@
 import { apiSlice } from "./apiSlice"
-const USERS_URL = 'https://bpun1p-chat-app-api.onrender.com';
+const base_url = import.meta.env.VITE_DEV_URL|| 'https://bpun1p-chat-app-api.onrender.com'
 
 export const usersApiSlice = apiSlice.injectEndpoints({         //creates the endpoint and then inject into the store/builder
   endpoints: (builder) => ({
     login: builder.mutation({
       query: (data) => ({
-        url: `${USERS_URL}/auth/login`,
+        url: `${base_url}/auth/login`,
         method: 'POST',
         body: data,
         credentials: 'include'
@@ -13,7 +13,7 @@ export const usersApiSlice = apiSlice.injectEndpoints({         //creates the en
     }),
     register: builder.mutation({
       query: (data) => ({
-        url: `${USERS_URL}/auth/register`,
+        url: `${base_url}/auth/register`,
         headers: {
           withCredentials: true
         },
@@ -24,7 +24,7 @@ export const usersApiSlice = apiSlice.injectEndpoints({         //creates the en
     }),
     logout: builder.mutation({
       query: (data) => ({
-        url: `${USERS_URL}/auth/logout`,
+        url: `${base_url}/auth/logout`,
         method: 'POST',
         body: data,
         credentials: 'include'
@@ -32,7 +32,7 @@ export const usersApiSlice = apiSlice.injectEndpoints({         //creates the en
     }),
     updateUser: builder.mutation({
       query: (data) => ({
-        url: `${USERS_URL}/auth/update`,
+        url: `${base_url}/auth/update`,
         headers: {
           Authorization: `Bearer ${data.token}`,
           withCredentials: true
