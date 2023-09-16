@@ -3,7 +3,7 @@ const User = require('../models/userModel');
 
 const tokenValidator = async (req, res, next) => {
   const { token } = req.cookies
-  console.log(token)
+  console.log(req.cookies)
   if (!token) {
     res.status(401).json({error: 'require authorization token'})
     return

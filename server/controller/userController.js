@@ -73,7 +73,8 @@ const registerUser = async (req, res) => {
 }
 
 const logoutUser = async (req, res) => {
-  res.clearCookie('token').status(200).json('logged out')
+  res.clearCookie('token')
+  return res.sendStatus(200).json({message: 'Logged out'})
 }
 
 const updateUser = async (req, res) => {
