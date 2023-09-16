@@ -4,16 +4,19 @@ const jwt = require('jsonwebtoken')
 
 const getSelectedUserMessages = async (req, res) => {
   const { userId } = req.params
-  console.log(userId)
   const selectedUserId = userId
 
   const { token } = req.cookies
   const tokenData = jwt.verify(token, process.env.SECRET)
   const myUserId = tokenData.user_id
-
-  const selectedUserData = await User.findOne({ _id: userId })
+  console.log({
+    selectedUser: selectedUserId,
+    myUser: myUserId
+  })
 
   try {
+    const selectedUserData = await User.findOne({ _id: userId })
+
     if(!selectedUserData) {
       throw Error('selected user not found')
     }

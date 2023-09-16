@@ -22,6 +22,7 @@ export default function Login() {
     }
 
     try {
+      console.log({email, password})
       const res = await login({ email, password }).unwrap()
       dispatch(setCredentials({...res}))
       navigate('/chats')
