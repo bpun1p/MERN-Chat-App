@@ -15,6 +15,7 @@ export default function ChatScreen () {
   const { user } = useSelector((state) => state.auth)
   const [ fetchMessages, { Loading } ] = useFetchMessagesMutation()
   const textMessage = useRef()
+  const ws_url = import.meta.env.VITE_WS_URL
 
   useEffect(() => {
     connectToWs()
@@ -31,7 +32,7 @@ export default function ChatScreen () {
   }, [isSelectedUser])
 
   const connectToWs = () => {
-    const ws = new WebSocket('ws://localhost:3000')
+    const ws = new WebSocket(ws_url)
     setWs(ws)
     ws.addEventListener('message', handleWsMessage)
     ws.addEventListener('close', () => {
@@ -127,13 +128,14 @@ export default function ChatScreen () {
     e.preventDefault()
     if (newMessage !== '') {
       ws.send(JSON.stringify({
-        user: isSelectedUser,
+        recipient: isSelectedUser,
+        sender: user.user_id,
         text: newMessage
       }))
       setMessages(prev => ([...prev, {
         text: newMessage, 
         sender: user.user_id,
-        receiver: isSelectedUser,
+        recipient: isSelectedUser,
         _id: Date.now()
       }]))
       setNewMessage('')

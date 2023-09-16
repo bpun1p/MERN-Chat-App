@@ -16,12 +16,10 @@ const getSelectedUserMessages = async (req, res) => {
     if(!selectedUserData) {
       throw Error('selected user not found')
     }
-
     const messages = await Message.find({
       sender: {$in: [selectedUserId, myUserId]},
-      receiver: {$in: [selectedUserId, myUserId]}
+      recipient: {$in: [selectedUserId, myUserId]}
     }).sort({createdAt: 1})
-    
     res.status(200).json(messages)
   } 
   catch(err) {

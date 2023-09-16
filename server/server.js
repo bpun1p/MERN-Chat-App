@@ -39,9 +39,6 @@ wsServer.on('connection', (connection, req) => {
       const token = cookieString.split('=')[1]
       if (token) {
         jwt.verify(token, process.env.SECRET, {}, async (err, userData) => {
-          if (err) {
-            throw err
-          }
           const { user_id, email, name } = userData
           connection._id = user_id
           connection.email = email
@@ -53,19 +50,19 @@ wsServer.on('connection', (connection, req) => {
 
   connection.on('message', async (message) => {
     const messageData = JSON.parse(message.toString())
-    const { user, text } = messageData
-    if (user && text) {
+    const { recipient, sender, text } = messageData
+    if (sender && recipient && text) {
       const messageDoc = await Message.create({
-        sender: connection._id,
-        receiver: user,
+        sender: sender,
+        recipient: recipient,
         text
       });
       [...wsServer.clients]
-        .filter(client => client._id === user)
+        .filter(client => client._id === recipient)
         .forEach(client => client.send(JSON.stringify({
           text, 
-          sender: connection._id,
-          receiver: user,
+          sender: sender,
+          recipient: recipient,
           _id: messageDoc._id
         })))
     }
