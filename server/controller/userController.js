@@ -64,8 +64,7 @@ const registerUser = async (req, res) => {
     const user_id = user._id
 
     const token = createToken(user_id, email, name)
-    res.cookie('token', token, {sameSite:'none', secure:true}).status(200).json({email, name, user_id, token})
-
+    res.cookie('token', {sameSite:'none', secure:true}).status(200).json({email, name, user_id, token})
   } 
   catch(err) {
     res.status(400).json({error: err.message})
@@ -73,7 +72,7 @@ const registerUser = async (req, res) => {
 }
 
 const logoutUser = async (req, res) => {
-  res.clearCookie('token').status(200).json({message: 'Logged out'})
+  res.clearCookie('token', {}, {sameSite:'none', secure:true}).status(200).json({message: 'Logged out'})
 }
 
 const updateUser = async (req, res) => {
