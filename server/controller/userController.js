@@ -8,9 +8,10 @@ const createToken = (user_id, email, name) => {
 }
 
 const loginUser = async (req, res) => {
+  try {
   const {email, password} = req.body
 
-  try {
+
     if (!email || !password) {
       throw Error('All fields must be filled')
     }
@@ -38,9 +39,10 @@ const loginUser = async (req, res) => {
 }
 
 const registerUser = async (req, res) => {
+  try {
   const {name, email, password} = req.body
 
-  try {
+
     if (!name || !email || ! password) {
       throw Error('All fields must be filled')
     }
@@ -72,17 +74,18 @@ const registerUser = async (req, res) => {
   }
 }
 
-const logoutUser = async (req, res) => {
+const logoutUser = (req, res) => {
   res.clearCookie('token').status(200).json('logged out')
 }
 
 const updateUser = async (req, res) => {
+  try {
   const user_id = req.user._id
   const {name, email, password} = req.body
   const user = await User.findOne({ email })
   const passMatch = await bcrypt.compare(password, user.password)
 
-  try {
+
     if (!name || !email || !password) {
       throw Error('All fields must be filled!')
     }
