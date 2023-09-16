@@ -3,11 +3,11 @@ const User = require('../models/userModel');
 
 const tokenValidator = async (req, res, next) => {
   const { token } = req.cookies
-
+  console.log(token)
   if (!token) {
     res.status(401).json({error: 'require authorization token'})
     return
-  };
+  }
  
   try {
     const tokenData = jwt.verify(token, process.env.SECRET)
