@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken')
 
 const getSelectedUserMessages = async (req, res) => {
   const { userId } = req.params
+  console.log(userId)
   const selectedUserId = userId
 
   const { token } = req.cookies
