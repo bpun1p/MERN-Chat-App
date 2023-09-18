@@ -76,7 +76,9 @@ const registerUser = async (req, res) => {
 }
 
 const logoutUser = async (req, res) => {
-  res.clearCookie('token', {}, {sameSite:'none', secure:true}).status(200).json({message: 'Logged out'}).end()
+  await res.clearCookie('token')
+  console.log('logout successfully')
+  res.end()
   // res.status(200).json({message: 'Logged out'})
 
 }
