@@ -30,7 +30,7 @@ const loginUser = async (req, res) => {
       throw Error('Incorrect password')
     }
     const token = createToken(user_id, email, name)
-    res.cookie('token', token, {sameSite:'none', secure:true}).status(200).json({email, name, user_id, token})
+    res.cookie('token', token, {path:'/', sameSite:'none', secure:true}).status(200).json({email, name, user_id, token})
     // res.status(200).json({email, name, user_id, token})
 
   } 
@@ -76,11 +76,8 @@ const registerUser = async (req, res) => {
 }
 
 const logoutUser = async (req, res) => {
-  await res.clearCookie('token')
-  console.log('logout successfully')
-  res.end()
+  res.clearCookie('token', {}, {sameSite:'none', secure:true}).status(200).json({message: 'Logged out'})
   // res.status(200).json({message: 'Logged out'})
-
 }
 
 const updateUser = async (req, res) => {
