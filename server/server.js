@@ -34,22 +34,22 @@ const server = app.listen(PORT, () => console.log(`Listening at: http://localhos
 
 const wsServer = new ws.WebSocketServer({server})
 wsServer.on('connection', (connection, req) => {
-  //read user's data from the cookie before handling connection
-  // const cookies = req.headers.cookie
-  // if (cookies) {
-  //   const cookieString = cookies.split(';').find(string => string.startsWith('token='))
-  //   if (cookieString) {
-  //     const token = cookieString.split('=')[1]
-  //     if (token) {
-  //       jwt.verify(token, process.env.SECRET, {}, async (err, userData) => {
-  //         const { user_id, email, name } = userData
-  //         connection._id = user_id
-  //         connection.email = email
-  //         connection.name = name
-  //       })
-  //     }
-  //   }
-  // }
+  // read user's data from the cookie before handling connection
+  const cookies = req.headers.cookie
+  if (cookies) {
+    const cookieString = cookies.split(';').find(string => string.startsWith('token='))
+    if (cookieString) {
+      const token = cookieString.split('=')[1]
+      if (token) {
+        jwt.verify(token, process.env.SECRET, {}, async (err, userData) => {
+          const { user_id, email, name } = userData
+          connection._id = user_id
+          connection.email = email
+          connection.name = name
+        })
+      }
+    }
+  }
 
   connection.on('message', async (message) => {
     const messageData = JSON.parse(message.toString())
