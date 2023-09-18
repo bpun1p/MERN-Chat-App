@@ -15,8 +15,8 @@ export default function ChatScreen () {
   const { user } = useSelector((state) => state.auth)
   const [ fetchMessages, { Loading } ] = useFetchMessagesMutation()
   const textMessage = useRef()
-  // const ws_url = import.meta.env.VITE_WS_URL
-  const ws_url = 'wss://bpun1p-chat-app-api.onrender.com'
+  const ws_url = import.meta.env.VITE_WS_URL
+  // const ws_url = 'wss://bpun1p-chat-app-api.onrender.com'
 
   useEffect(() => {
     connectToWs()
@@ -45,9 +45,8 @@ export default function ChatScreen () {
   }
 
   const receiveMessages = async (selectedUserId) => {
-    const res = await fetchMessages({selectedUserId})
-    console.log(res.data)
-    // setMessages(res.data)
+    const res = await fetchMessages({selectedUserId, user})
+    setMessages(res.data)
   }
 
   const displayMessages = () => {

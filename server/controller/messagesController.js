@@ -6,16 +6,20 @@ const getSelectedUserMessages = async (req, res) => {
   const { userId } = req.params
   const selectedUserId = userId
 
-  const { token } = req.cookies
+  // const { token } = req.cookies
+  const { authorization } = req.headers;
+  const token = authorization.split(' ')[1];
+
   const tokenData = jwt.verify(token, process.env.SECRET)
   const myUserId = tokenData.user_id
+  
   console.log({
     selectedUser: selectedUserId,
     myUser: myUserId
   })
 
   try {
-    const selectedUserData = await User.findOne({ _id: userId })
+    const selectedUserData = await User.findOne({ _id: selectedUserId })
 
     if(!selectedUserData) {
       throw Error('selected user not found')

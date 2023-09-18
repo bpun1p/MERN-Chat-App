@@ -6,10 +6,9 @@ const router = express.Router()
 
 router.post('/login', loginUser)
 router.post('/register', registerUser)
+router.post('/logout', logoutUser)
 
 router.use(tokenValidator)
-
-router.post('/logout', logoutUser)
 router.patch('/update', updateUser)
 
 module.exports = router

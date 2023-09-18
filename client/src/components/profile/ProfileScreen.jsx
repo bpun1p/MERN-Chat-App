@@ -33,7 +33,7 @@ function ProfileScreen() {
     }
 
     try {
-      const res = await update({name, email, password}).unwrap()
+      const res = await update({name, email, password, user}).unwrap()
       dispatch(setCredentials({...res}))
     } catch(err) {
       if (err.data && err.data.error) {

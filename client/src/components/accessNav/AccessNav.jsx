@@ -12,8 +12,8 @@ export default function AccessNav() {
   const dispatch = useDispatch()
   const [logout, { isLoading }] = useLogoutMutation()
 
-  const handleLogoutClicked = () => {
-    logout()
+  const handleLogoutClicked = async () => {
+    await logout()
     dispatch(clearCredentials())
     navigate('/access')
   }

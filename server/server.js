@@ -23,6 +23,7 @@ app.use(cookieParser());
 //middleware to enable requests between multiple browsers 
 const cors = require('cors')
 app.use(cors({origin: ['http://localhost:5173', 'https://bpun1p-chat-app.onrender.com'], credentials: true}))
+app.set("trust proxy", 1);
 
 //connect to mongodb
 mongoose.connect(process.env.DB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
