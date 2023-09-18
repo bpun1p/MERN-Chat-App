@@ -10,6 +10,7 @@ const Message = require('./models/messageModel')
 
 //express app
 const app = express()
+app.set("trust proxy", 1);
 //middleweare to read body, parse it and place results in req.bdoy
 app.use(express.urlencoded({extended: true}))       // for application/x-www-form-urlencoded
 
@@ -23,7 +24,7 @@ app.use(cookieParser());
 //middleware to enable requests between multiple browsers 
 const cors = require('cors')
 app.use(cors({origin: ['http://localhost:5173', 'https://bpun1p-chat-app.onrender.com'], credentials: true}))
-app.set("trust proxy", 1);
+
 
 //connect to mongodb
 mongoose.connect(process.env.DB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
