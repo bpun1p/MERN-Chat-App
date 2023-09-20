@@ -8,7 +8,7 @@ const tokenValidator = async (req, res, next) => {
   //   res.status(401).json({error: 'require authorization token'})
   //   return
   // }
-
+  console.log(req.headers)
   const { authorization } = req.headers;
   const token = authorization.split(' ')[1];
 

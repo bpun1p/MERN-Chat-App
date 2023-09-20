@@ -15,8 +15,8 @@ export default function ChatScreen () {
   const { user } = useSelector((state) => state.auth)
   const [ fetchMessages, { Loading } ] = useFetchMessagesMutation()
   const textMessage = useRef()
-  // const ws_url = import.meta.env.VITE_WS_URL
-  const ws_url = 'wss://bpun1p-chat-app-api.onrender.com'
+  const ws_url = import.meta.env.VITE_WS_URL
+  // const ws_url = 'wss://bpun1p-chat-app-api.onrender.com'
 
   useEffect(() => {
     connectToWs()
@@ -33,7 +33,7 @@ export default function ChatScreen () {
   }, [isSelectedUser])
 
   const connectToWs = () => {
-    const ws = new WebSocket(ws_url)
+    const ws = new WebSocket(ws_url, ['access_token', user.token])
     setWs(ws)
     ws.addEventListener('message', handleWsMessage)
     ws.addEventListener('close', () => {
