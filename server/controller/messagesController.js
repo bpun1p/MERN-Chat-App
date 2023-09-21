@@ -33,4 +33,4 @@ const getSelectedUserMessages = async (req, res) => {
 
 module.exports = { 
   getSelectedUserMessages
-}  
+}
