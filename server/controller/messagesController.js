@@ -28,7 +28,6 @@ const getSelectedUserMessages = async (req, res) => {
       sender: {$in: [selectedUserId, myUserId]},
       recipient: {$in: [selectedUserId, myUserId]}
     }).sort({createdAt: 1})
-    console.log(messages)
     
     res.status(200).json(messages)
   } 
