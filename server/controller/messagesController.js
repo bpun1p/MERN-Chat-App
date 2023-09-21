@@ -12,11 +12,6 @@ const getSelectedUserMessages = async (req, res) => {
 
   const tokenData = jwt.verify(token, process.env.SECRET)
   const myUserId = tokenData.user_id
-  
-  console.log({
-    selectedUser: selectedUserId,
-    myUser: myUserId
-  })
 
   try {
     const selectedUserData = await User.findOne({ _id: selectedUserId })
