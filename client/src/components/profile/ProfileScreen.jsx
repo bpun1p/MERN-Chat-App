@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
 import { setCredentials } from '../../slices/authSlice'
-import { useUpdateUserMutation } from '../../slices/usersApiSlice'
+import { useUpdateUserMutation } from '../../slices/authApiSlice'
 import './ProfileScreen.css'
 
 function ProfileScreen() {

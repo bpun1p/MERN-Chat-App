@@ -1,14 +1,10 @@
 const express = require('express')
-const { loginUser, registerUser, updateUser, logoutUser } = require('../controller/userController')
+const { getAllUsers } = require('../controller/usersController')
 const tokenValidator = require('../middleware/tokenValidator')
 
 const router = express.Router()
 
-router.post('/login', loginUser)
-router.post('/register', registerUser)
-router.post('/logout', logoutUser)
-
 router.use(tokenValidator)
-router.patch('/update', updateUser)
+router.get('/getAllUsers', getAllUsers)
 
 module.exports = router

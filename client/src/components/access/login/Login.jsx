@@ -2,7 +2,7 @@ import { useState } from 'react'
 import './Login.css'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
-import { useLoginMutation } from '../../../slices/usersApiSlice'
+import { useLoginMutation } from '../../../slices/authApiSlice'
 import { setCredentials } from '../../../slices/authSlice'
 import { toast } from 'react-toastify'
 

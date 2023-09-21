@@ -2,7 +2,7 @@ import './AccessNav.css'
 import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { clearCredentials } from '../../slices/authSlice'
-import { useLogoutMutation } from '../../slices/usersApiSlice'
+import { useLogoutMutation } from '../../slices/authApiSlice'
 import { useNavigate } from 'react-router-dom'
 
 

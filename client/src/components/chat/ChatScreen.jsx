@@ -5,16 +5,20 @@ import { toast } from 'react-toastify'
 import { useSelector } from 'react-redux'
 import { useFetchMessagesMutation } from '../../slices/chatsApiSlice'
 import { uniqBy } from 'lodash'
+import { useGetAllUsersMutation } from '../../slices/usersApiSlice'
 
 export default function ChatScreen () {
   const [ ws, setWs ] = useState(null)
-  const [ isOnline, setIsOnline ] = useState(null)
+  const [ onlineUsers, setOnlineUsers ] = useState({})
+  const [ offlineUsers, setOfflineUsers ] = useState({})
   const [ isSelectedUser, setIsSelectedUser ] = useState('')
   const [ newMessage, setNewMessage ] = useState('')
   const [ messages, setMessages ] = useState([])
   const { user } = useSelector((state) => state.auth)
-  const [ fetchMessages, { Loading } ] = useFetchMessagesMutation()
+  const [ fetchMessages ] = useFetchMessagesMutation()
+  const [ getAllUsers ] = useGetAllUsersMutation()
   const textMessage = useRef()
+
   const ws_url = import.meta.env.VITE_WS_URL
   // const ws_url = 'wss://bpun1p-chat-app-api.onrender.com'
 
@@ -31,6 +35,32 @@ export default function ChatScreen () {
       receiveMessages(isSelectedUser)
     }
   }, [isSelectedUser])
+
+  useEffect(() => {
+    fetchOfflineUsers()
+  }, [onlineUsers])
+
+  const fetchOfflineUsers = async () => {
+    const offlineUsers = {}
+    const myUserId = user.user_id
+    const res = await getAllUsers({user})
+
+    const allUsersExceptMe = res.data.filter(user => user._id !== myUserId)
+    const offlineUsersArr = allUsersExceptMe.filter(user => !Object.keys(onlineUsers).includes(user._id))
+    offlineUsersArr.forEach(user => offlineUsers[user._id] = user.name) 
+
+    setOfflineUsers(offlineUsers)
+  }
+
+  const fetchOnlineUsers = (usersArr) => {
+    const users = {}
+    if (usersArr.length > 0) { 
+      usersArr.forEach(({id, name}) => {
+        users[id] = name
+      })
+    }
+    setOnlineUsers(users)
+  }
 
   const connectToWs = () => {
     const ws = new WebSocket(ws_url, ['access_token', user.token])
@@ -71,13 +101,30 @@ export default function ChatScreen () {
       return(displayMessagesJSX)
     }
   }
+  
+  const displayOfflineUsers = () => {
+    if (offlineUsers) {
+      const offlineUsersJSX = Object.keys(offlineUsers).map(userId => (
+        <div 
+          className='user-container' 
+          key={nanoid()}
+          onClick={() => setIsSelectedUser(userId)}
+          style={(userId === isSelectedUser ? {backgroundColor : 'rgb(219,233,246)'}: {backgroundColor : ''})}
+        >
+          <div id='user'>{offlineUsers[userId]}</div>
+          <span className='dot' style={{backgroundColor: 'rgb(192,192,192)'}} ></span>
+        </div>
+      ))
+      return offlineUsersJSX
+    }
+  }
 
   const displayOnlineUsers = () => {
-    if (isOnline) {
-      if ('undefined' in isOnline) {
-        delete isOnline['undefined']
+    if (onlineUsers) {
+      if ('undefined' in onlineUsers) {
+        delete onlineUsers['undefined']
       }
-      const onlineUsersExclMyself = {...isOnline}
+      const onlineUsersExclMyself = {...onlineUsers}
       delete onlineUsersExclMyself[user.user_id]
       const onlineUsersJSX = Object.keys(onlineUsersExclMyself).map(userId => (
         <div 
@@ -86,22 +133,12 @@ export default function ChatScreen () {
           onClick={() => setIsSelectedUser(userId)}
           style={(userId === isSelectedUser ? {backgroundColor : 'rgb(219,233,246)'}: {backgroundColor : ''})}
         >
-          <div id='user'>{isOnline[userId]}</div>
-          <span className='dot'></span>
+          <div id='user'>{onlineUsers[userId]}</div>
+          <span className='dot' style={{backgroundColor: 'rgb(95, 236, 107)'}}></span>
         </div>
       ))
-      return(onlineUsersJSX)
+      return onlineUsersJSX 
     }
-  }
-
-  const showOnlineUsers = (usersArr) => {
-    const users = {}
-    if (usersArr.length > 0) { 
-      usersArr.forEach(({id, name}) => {
-        users[id] = name
-      })
-    }
-    setIsOnline(users)
   }
 
   const handleWsMessage = async (e) => {
@@ -110,7 +147,7 @@ export default function ChatScreen () {
       const onlineData = JSON.parse(e.data)
       console.log('Connected')
       if ('online' in onlineData) {
-        showOnlineUsers(onlineData.online)
+        fetchOnlineUsers(onlineData.online)
       } 
       else if ('text' in onlineData)(
         setMessages(prev => ([...prev, {...onlineData}]))
@@ -152,6 +189,7 @@ export default function ChatScreen () {
         <h3 className='chat-header'>Chats</h3>
         <div className='chat-contacts-body'>
           {displayOnlineUsers()}
+          {displayOfflineUsers()}
         </div>
       </div>
       <div className='chat-body'>

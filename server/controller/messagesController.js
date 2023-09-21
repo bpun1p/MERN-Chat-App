@@ -12,11 +12,6 @@ const getSelectedUserMessages = async (req, res) => {
 
   const tokenData = jwt.verify(token, process.env.SECRET)
   const myUserId = tokenData.user_id
-  
-  console.log({
-    selectedUser: selectedUserId,
-    myUser: myUserId
-  })
 
   try {
     const selectedUserData = await User.findOne({ _id: selectedUserId })
@@ -28,7 +23,6 @@ const getSelectedUserMessages = async (req, res) => {
       sender: {$in: [selectedUserId, myUserId]},
       recipient: {$in: [selectedUserId, myUserId]}
     }).sort({createdAt: 1})
-    console.log(messages)
     
     res.status(200).json(messages)
   } 
@@ -39,4 +33,4 @@ const getSelectedUserMessages = async (req, res) => {
 
 module.exports = { 
   getSelectedUserMessages
-}  
+}

@@ -4,47 +4,18 @@ const base_url = import.meta.env.VITE_URL
 
 export const usersApiSlice = apiSlice.injectEndpoints({         //creates the endpoint and then inject into the store/builder
   endpoints: (builder) => ({
-    login: builder.mutation({
+    getAllUsers: builder.mutation({
       query: (data) => ({
-        url: `${base_url}/auth/login`,
-        method: 'POST',
-        body: data,
-        credentials: 'include'
-      })
-    }),
-    register: builder.mutation({
-      query: (data) => ({
-        url: `${base_url}/auth/register`,
-        headers: {
-          withCredentials: true
-        },
-        method: 'POST',
-        body: data,
-        credentials: 'include'
-      })
-    }),
-    logout: builder.mutation({
-      query: (data) => ({
-        url: `${base_url}/auth/logout`,
-        method: 'POST',
-        body: data,
-        credentials: 'include',
-        withCredentials: true
-      })
-    }),
-    updateUser: builder.mutation({
-      query: (data) => ({
-        url: `${base_url}/auth/update`,
+        url: `${base_url}/users/getAllUsers`,
         headers: {
           Authorization: `Bearer ${data.user.token}`,
           withCredentials: true
         },
-        method: 'PATCH',
-        body: data,
+        method: 'GET',
         credentials: 'include'
       })
-    })  
+    })
   })
 })
 
-export const { useLoginMutation, useRegisterMutation, useUpdateUserMutation, useLogoutMutation } = usersApiSlice
+export const { useGetAllUsersMutation } = usersApiSlice

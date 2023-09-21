@@ -2,7 +2,7 @@ import { useState } from 'react'
 import './Register.css'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
-import { useRegisterMutation } from '../../../slices/usersApiSlice'
+import { useRegisterMutation } from '../../../slices/authApiSlice'
 import { setCredentials } from '../../../slices/authSlice'
 import { toast } from 'react-toastify'
 

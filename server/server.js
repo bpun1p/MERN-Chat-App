@@ -1,8 +1,9 @@
 const express = require('express')
 const PORT = process.env.PORT || 3000
 const mongoose = require('mongoose')
-const userRoutes = require('./routes/userRoutes')
+const authRoutes = require('./routes/authRoutes')
 const messagesRoutes = require('./routes/messageRoutes')
+const userRoutes = require('./routes/userRoutes')
 require('dotenv').config()
 const ws = require('ws')
 const jwt = require('jsonwebtoken')
@@ -80,5 +81,6 @@ wsServer.on('connection', (connection, req) => {
 })  
 
 //Api routes
-app.use('/auth', userRoutes)
+app.use('/auth', authRoutes)
+app.use('/users', userRoutes)
 app.use('/messages', messagesRoutes)
