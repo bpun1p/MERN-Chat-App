@@ -35,6 +35,37 @@ const server = app.listen(PORT, () => console.log(`Listening at: http://localhos
 
 const wsServer = new ws.WebSocketServer({server})
 wsServer.on('connection', (connection, req) => {
+  // notify about online users when someone connects
+  const notifyAboutOnlineUsers = () => {
+    [...wsServer.clients].forEach(client => {
+      client.send(JSON.stringify(
+        {
+          online: [...wsServer.clients].map(client => ({
+            id: client._id, 
+            email: client.email,
+            name: client.name
+          }))
+        }
+      ))
+    })
+  }
+
+  //checking if the connection is alive
+  connection.isAlive = true
+  connection.timer = setInterval(() => {
+    connection.ping()
+    console.log('ping')
+    connection.deathTimer = setTimeout(() => {
+      connection.isAlive = false
+      connection.terminate()
+      notifyAboutOnlineUsers()
+      console.log('dead')
+    }, 1000)
+  }, 5000)
+  connection.on('pong', () => {
+    clearTimeout(connection.deathTimer)
+  })
+
   // read user's data from the cookie before handling connection
   const token = req.headers['sec-websocket-protocol'].split(' ')[1]
   if (token) {
@@ -65,20 +96,9 @@ wsServer.on('connection', (connection, req) => {
         })))
     }
   });
-
   // notify about online users when someone connects
-  [...wsServer.clients].forEach(client => {
-    client.send(JSON.stringify(
-      {
-        online: [...wsServer.clients].map(client => ({
-          id: client._id, 
-          email: client.email,
-          name: client.name
-        }))
-      }
-    ))
-  })
-})  
+  notifyAboutOnlineUsers()
+})
 
 //Api routes
 app.use('/auth', authRoutes)
