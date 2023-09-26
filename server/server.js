@@ -54,12 +54,10 @@ wsServer.on('connection', (connection, req) => {
   connection.isAlive = true
   connection.timer = setInterval(() => {
     connection.ping()
-    console.log('ping')
     connection.deathTimer = setTimeout(() => {
       connection.isAlive = false
       connection.terminate()
       notifyAboutOnlineUsers()
-      console.log('dead')
     }, 1000)
   }, 5000)
   connection.on('pong', () => {
