@@ -29,7 +29,7 @@ export default function MenuToggler() {
           </div>
         </nav>
         <div className={menuClass}>
-          <Menu/>
+          <Menu chatsClicked={updateMenu}/>
         </div>
       </div>
     </>

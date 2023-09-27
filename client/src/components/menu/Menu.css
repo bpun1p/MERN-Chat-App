@@ -19,7 +19,7 @@ nav {
   height: fit-content;
   position: relative;
   width: 90%;
-  top: 35%;
+  top: 20%;
   left: 5%;
   border: 0px solid;
   border-radius: 10px;
@@ -35,7 +35,7 @@ nav {
   padding-top: 5%;
 }
 
-.nav-chats-text, .nav-settings-text {
+.nav-chats-text {
   background: none;
   border: none;
   font-size: 1.2rem;
@@ -48,7 +48,6 @@ nav {
 #profile-image {
   width: 20%;
   height: auto;
-  margin-right: 5%;
 }
 
 .menu-header{
@@ -61,26 +60,13 @@ nav {
   position: relative;
   left: 30%;
   height: 100%;
+  align-items: center;
 }
 
 .menu-header-user-name {
   position: relative;
   bottom: 1.2rem;
-}
-
-.menu-header-settings-icon-container {
-  position: relative;
-  left: 83%;
-  top: 3%;
-}
-
-.nav-settings-icon-container {
-  position: relative;
-  left: 56%;
-  bottom: 2.5rem;
-}
-.nav-settings-text {
-  right: 1.25rem;
+  margin-left: 8%;
 }
 
 .nav-header-chat-icon-container {
@@ -101,5 +87,8 @@ nav {
   bottom: 10%;
   width: fit-content;
   margin-left: 10%;
+}
 
+.rc-tooltip-content .rc-tooltip-inner {
+  min-height: unset;
 }

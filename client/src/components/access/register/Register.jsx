@@ -48,25 +48,25 @@ export default function Register() {
             placeholder='Enter name'
             type='text'
             id='register-name'
-            onChange={(e) => setName(() => e.target.value)}
+            onChange={(e) => setName(e.target.value)}
           />
           <input
             placeholder='Enter email'
             type='text'
             id='register-email'
-            onChange={(e) => setEmail(() => e.target.value)}
+            onChange={(e) => setEmail(e.target.value)}
           />
           <input
             placeholder='Create password'
             type='password'
             id='register-password'
-            onChange={(e) => setPassword(() => e.target.value)}
+            onChange={(e) => setPassword(e.target.value)}
           />
           <input
             placeholder='Confirm password'
             type='password'
             id='register-confirm-password'
-            onChange={(e) => setConfirmPassword(() => e.target.value)}
+            onChange={(e) => setConfirmPassword(e.target.value)}
           />
           <button type='submit' className='register-btn' disabled={isLoading} onClick={handleCreateClicked}>Create</button>
         </form>
