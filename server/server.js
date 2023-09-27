@@ -8,7 +8,6 @@ require('dotenv').config()
 const ws = require('ws')
 const jwt = require('jsonwebtoken')
 const Message = require('./models/messageModel')
-const { tokenValidtor } = require('./middleware/tokenValidator')
 
 //express app
 const app = express()
@@ -59,7 +58,7 @@ wsServer.on('connection', (connection, req) => {
       connection.terminate()
       notifyAboutOnlineUsers()
     }, 1000)
-  }, 5000)
+  }, 30000)
   connection.on('pong', () => {
     clearTimeout(connection.deathTimer)
   })
