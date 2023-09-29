@@ -20,7 +20,6 @@ export default function Login() {
       toast.error('All fields must be filled!')
       return
     }
-
     try {
       console.log({email, password})
       const res = await login({ email, password }).unwrap()
@@ -29,9 +28,20 @@ export default function Login() {
     } catch(err) {
       if (err.data && err.data.error) {
         toast.error(err.data.error)
+        return
       }
     }
     return
+  }
+
+  const handleGuestAccessClicked = async (e) => {
+    e.preventDefault()
+    const email = import.meta.env.VITE_GUEST_EMAIL 
+    const password = import.meta.env.VITE_GUEST_PASS
+
+    const res = await login({ email, password }).unwrap()
+    dispatch(setCredentials({...res}))
+    navigate('/chats')
   }
 
   return (
@@ -52,6 +62,8 @@ export default function Login() {
             onChange={(e) => setPassword(e.target.value)}
           />
           <button disabled={isLoading} type='submit' className='login-btn' onClick={handleLoginClicked}>Login</button>
+          <span>OR</span>
+          <button disabled={isLoading} type='submit' className='guest-btn' onClick={handleGuestAccessClicked}>Guest Access</button>
         </form>
       </div>
     </div>

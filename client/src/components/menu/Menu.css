@@ -57,16 +57,13 @@ nav {
 }
 
 .menu-header-user {
-  position: relative;
-  left: 30%;
-  height: 100%;
-  align-items: center;
+  text-align: center;
 }
 
 .menu-header-user-name {
   position: relative;
   bottom: 1.2rem;
-  margin-left: 8%;
+  margin-left: 3%;
 }
 
 .nav-header-chat-icon-container {
