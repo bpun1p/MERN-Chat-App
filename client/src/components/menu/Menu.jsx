@@ -5,7 +5,7 @@ import AvatarIcon from '../../assets/images/avatarImage.png'
 import ChatIcon from '../../assets/images/bubbleChat.png'
 import { useSelector } from 'react-redux'
 import Tooltip from 'rc-tooltip';
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 import 'rc-tooltip/assets/bootstrap.css';
 
 export default function Menu(props) {

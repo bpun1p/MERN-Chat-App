@@ -59,3 +59,22 @@
 #regiser-confirm-password {
   margin-bottom: 0;
 }
+.password-container {
+  display: flex;
+  align-items: center;
+}
+
+#infoIcon {
+  max-width: 30px;
+  max-height: 30px;
+  cursor: pointer;
+}
+
+.rc-tooltip-content .rc-tooltip-inner {
+  min-height: unset;
+}
+
+.pass-req-list li{
+  position: relative;
+  left: -15px;
+}
