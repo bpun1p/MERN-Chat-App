@@ -43,13 +43,13 @@ export default function Login() {
             placeholder='Enter email'
             type='text'
             id='login-email'
-            onChange={(e) => setEmail(() => e.target.value)}
+            onChange={(e) => setEmail(e.target.value)}
           />
           <input
             placeholder='Enter password'
             type='password'
             id='login-password'
-            onChange={(e) => setPassword(() =>  e.target.value)}
+            onChange={(e) => setPassword(e.target.value)}
           />
           <button disabled={isLoading} type='submit' className='login-btn' onClick={handleLoginClicked}>Login</button>
         </form>
