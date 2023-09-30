@@ -1,10 +1,11 @@
 const express = require('express')
-const { getAllUsers } = require('../controller/usersController')
+const { getSelectedUserMessages } = require('../controller/messagesController')
 const tokenValidator = require('../middleware/tokenValidator')
 
 const router = express.Router()
 
 router.use(tokenValidator)
-router.get('/getAllUsers', getAllUsers)
+
+router.get('/:userId', getSelectedUserMessages)
 
 module.exports = router

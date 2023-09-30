@@ -7,7 +7,7 @@
   border: none;
   outline: none;
   background: none;
-  margin: 50px 5% 19px 5%;
+  margin: 10% 5% 19px 5%;
   background: #3899ec;
   color: white;
   font-size: 16px;
@@ -20,6 +20,7 @@
   transition-duration: 0.3s;
   -webkit-transiton-property: box-shadow, transform;
   transition-property: box-shadow, transform;
+  cursor: pointer;
 }
 
 .register-btn:hover, 
@@ -37,7 +38,7 @@
   align-items: center;
 }
 
-#register-email, #register-password, #register-confirm-password {
+#register-name, #register-email, #register-password, #register-confirm-password {
   border: none;
   border-bottom: 1px solid #afafaf;
   outline: none;
@@ -45,7 +46,7 @@
   font-size: 15px;
 }
 
-#register-email {
+#register-name {
   margin-top: 60px;
 }
 
@@ -58,4 +59,23 @@
 
 #regiser-confirm-password {
   margin-bottom: 0;
+}
+.password-container {
+  display: flex;
+  align-items: center;
+}
+
+#infoIcon {
+  max-width: 30px;
+  max-height: 30px;
+  cursor: pointer;
+}
+
+.rc-tooltip-content .rc-tooltip-inner {
+  min-height: unset;
+}
+
+.pass-req-list li{
+  position: relative;
+  left: -15px;
 }
