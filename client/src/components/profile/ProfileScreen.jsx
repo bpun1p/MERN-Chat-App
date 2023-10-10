@@ -13,7 +13,7 @@ function ProfileScreen() {
 
   const dispatch = useDispatch()
   const { user } = useSelector((state) => state.auth)
-  const [ update, { isLoading } ] = useUpdateUserMutation()
+  const [ update ] = useUpdateUserMutation()
 
   useEffect(() => {
     setName(() => user.name)
@@ -31,6 +31,10 @@ function ProfileScreen() {
       toast.error('Passwords do not match!')
       return
     }
+    else if (user.email === import.meta.env.VITE_GUEST_EMAIL) {
+      toast.error('Unauthorized to make profile changes!')
+      return
+    }
 
     try {
       const res = await update({name, email, password, user}).unwrap()
@@ -39,7 +43,8 @@ function ProfileScreen() {
       if (err.data && err.data.error) {
         toast.error(err.data.error)
       }
-    } 
+    }
+    return
   }
 
   return (
