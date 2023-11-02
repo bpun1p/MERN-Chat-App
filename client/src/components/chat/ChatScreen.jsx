@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux'
 import { useFetchMessagesMutation } from '../../slices/chatsApiSlice'
 import { uniqBy } from 'lodash'
 import { useGetAllUsersMutation } from '../../slices/usersApiSlice'
+import landscape from '../../assets/images/landscape.png'
 
 export default function ChatScreen () {
   const [ ws, setWs ] = useState(null)
@@ -20,7 +21,6 @@ export default function ChatScreen () {
   const textMessage = useRef()
 
   const ws_url = import.meta.env.VITE_WS_URL
-  // const ws_url = 'wss://bpun1p-chat-app-api.onrender.com'
 
   useEffect(() => {
     connectToWs()
@@ -40,26 +40,22 @@ export default function ChatScreen () {
     fetchOfflineUsers()
   }, [onlineUsers])
 
-  const fetchOfflineUsers = async () => {
-    const offlineUsers = {}
-    const myUserId = user.user_id
-    const res = await getAllUsers({user})
-
-    const allUsersExceptMe = res.data.filter(user => user._id !== myUserId)
-    const offlineUsersArr = allUsersExceptMe.filter(user => !Object.keys(onlineUsers).includes(user._id))
-    offlineUsersArr.forEach(user => offlineUsers[user._id] = user.name) 
-
-    setOfflineUsers(offlineUsers)
-  }
-
-  const fetchOnlineUsers = (usersArr) => {
-    const users = {}
-    if (usersArr.length > 0) { 
-      usersArr.forEach(({id, name}) => {
-        users[id] = name
-      })
+  const handleWsMessage = async (e) => {
+    e.preventDefault()
+    if (e.data.length > 0) {
+      const onlineData = JSON.parse(e.data)
+      if ('online' in onlineData) {
+        fetchOnlineUsers(onlineData.online)
+      } 
+      else if ('text' in onlineData) {
+        setMessages(prev => ([...prev, {...onlineData}]))
+      } 
+      else if ('file' in onlineData) {
+        if (onlineData.recipient === user.user_id) {
+          setMessages(prev => ([...prev, {...onlineData}]));
+        }
+      }
     }
-    setOnlineUsers(users)
   }
 
   const connectToWs = () => {
@@ -74,34 +70,28 @@ export default function ChatScreen () {
     })
   }
 
-  const receiveMessages = async (selectedUserId) => {
-    const res = await fetchMessages({selectedUserId, user})
-    setMessages(res.data)
+  const fetchOfflineUsers = async () => {
+    const offlineUsers = {}
+    const myUserId = user.user_id
+    const res = await getAllUsers({user})
+
+    const allUsersExceptMe = res.data.filter(user => user._id !== myUserId)   //returning an array of users that do not match logged in user
+    const offlineUsersArr = allUsersExceptMe.filter(user => !Object.keys(onlineUsers).includes(user._id))  //returning an array of users that are not present in the array of online users including logged in user
+    offlineUsersArr.forEach(user => offlineUsers[user._id] = user.name) // populating offlineUsers object with key-value pairs where each user Id corresponds with the user's name
+
+    setOfflineUsers(offlineUsers)
   }
 
-  const displayMessages = () => {
-    const myId = user.user_id
-    if (isSelectedUser && messages.length > 0) {
-      const messagesWithoutDupes = uniqBy(messages, '_id')
-      const displayMessagesJSX = messagesWithoutDupes.map(message => (
-        <div key={nanoid()}>
-          <div
-            className='message-container'
-            style={(message.sender === myId ? {textAlign: 'right'} : {textAlign: 'left'})}
-          >
-            <span id='message'
-              style={(message.sender === myId ? {backgroundColor: '#b9bcb9'} : {backgroundColor: '#82baf3'})}
-              ref={textMessage}
-            >
-              {message.text}
-            </span>
-          </div>
-        </div>
-      ))
-      return(displayMessagesJSX)
+  const fetchOnlineUsers = (usersArr) => {
+    const users = {}
+    if (usersArr.length > 0) { 
+      usersArr.forEach(({id, name}) => {
+        users[id] = name
+      })
     }
+    setOnlineUsers(users)
   }
-  
+
   const displayOfflineUsers = () => {
     if (offlineUsers) {
       const offlineUsersJSX = Object.keys(offlineUsers).map(userId => (
@@ -141,20 +131,6 @@ export default function ChatScreen () {
     }
   }
 
-  const handleWsMessage = async (e) => {
-    e.preventDefault()
-    if (e.data.length > 0) {
-      const onlineData = JSON.parse(e.data)
-      console.log('Connected')
-      if ('online' in onlineData) {
-        fetchOnlineUsers(onlineData.online)
-      } 
-      else if ('text' in onlineData)(
-        setMessages(prev => ([...prev, {...onlineData}]))
-      )
-    }
-  }
-
   const scrollIntoView = () => {
     const divTextMessage = textMessage.current
     if (divTextMessage) {
@@ -162,24 +138,103 @@ export default function ChatScreen () {
     }
   }
 
-  const sendMessage = (e) => {
-    e.preventDefault()
-    if (newMessage !== '') {
-      ws.send(JSON.stringify({
+  const displayMessages = () => {
+    const myId = user.user_id
+
+    if (isSelectedUser && messages.length > 0) {
+      const messagesWithoutDupes = uniqBy(messages, '_id')
+      const displayMessagesJSX = messagesWithoutDupes.map(message => (
+        <div key={nanoid()}>
+          <div
+            className='message-container'
+            style={(message.sender === myId ? {textAlign: 'right'} : {textAlign: 'left'})}
+          >
+            {message.text && message.file ? 
+              (<>
+                <img
+                  id='imgFileAndText'
+                  src={message?.file?.data}
+                />
+                <div style={{ display: 'block' }}>
+                  <span className='text' style={{ backgroundColor: message.sender === myId ? '#b9bcb9': '#82baf3'}}>{message.text}</span>
+                </div>
+              </>)
+              : 
+              (message.text || message.file ? <span 
+                id='message'
+                style={
+                  (message.sender === myId && message.text ? { backgroundColor: '#b9bcb9' } 
+                  : 
+                  (!message.text && message.file ? { backgroundColor: 'none' } 
+                  :
+                  (message.sender !== myId ? { backgroundColor: '#82baf3' } : null )))
+                }
+                ref={textMessage}
+              >
+                {message.text}
+                {message.file && (
+                  <img 
+                    id='imgFile'
+                    src={message?.file?.data} 
+                  />
+                )}
+              </span> : null)
+            }         
+          </div>
+        </div>
+      ))
+      return(displayMessagesJSX)
+    }
+  }
+
+  const receiveMessages = async (selectedUserId) => {
+    const res = await fetchMessages({selectedUserId, user})
+    setMessages(res.data)
+  }
+
+  const sendMessage = (e, file = null) => {
+    if (e) e.preventDefault()
+    if (newMessage.trim() !== '' || file) {
+      const wsData = {
         recipient: isSelectedUser,
         sender: user.user_id,
-        text: newMessage
-      }))
-      setMessages(prev => ([...prev, {
-        text: newMessage, 
+      }
+
+      if (file) {
+        wsData.file = file
+      }
+
+      if (newMessage.trim() !== '') {
+        wsData.text = newMessage
+      }
+    
+      ws.send(JSON.stringify(wsData))
+    
+      const newMessageObject = {
+        text: newMessage.trim() !== '' ? newMessage : null, // Set to an empty string if newMessage is empty
+        file: file ? file : null,
         sender: user.user_id,
         recipient: isSelectedUser,
         _id: Date.now()
-      }]))
+      }
+
+      setMessages((prev) => [...prev, newMessageObject]);
       setNewMessage('')
       scrollIntoView()
     } else {
       toast.error('Filled in field required')
+    }
+  }
+
+  const sendFile = (e) => {
+    const file = e?.target?.files?.[0]
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onload = () => {
+      sendMessage(null, {
+        name: file.name,
+        data: reader.result,
+      })
     }
   }
 
@@ -196,16 +251,20 @@ export default function ChatScreen () {
         <div className='chat-message-container'>
           <div className='chat-message-body'>
             {!isSelectedUser ? <span id='no-contacts-selected'>Start Chating Now!</span> : null}
-            {displayMessages()}
+            {isSelectedUser && displayMessages()}
           </div>
         </div>
         {!!isSelectedUser && 
           <form className='chat-text-container' onSubmit={sendMessage}>
+            <label type='button' className='attach-image-btn' >
+              <input type='file' className='hidden'onChange={sendFile}/>
+              <img className='attach-image' src={landscape}/>
+            </label>
             <input type='text' 
-            placeholder='Type your message here' 
-            id='chat-textbox'
-            value={newMessage}
-            onChange={e => setNewMessage(e.target.value)}
+              placeholder='Type your message here' 
+              id='chat-textbox'
+              value={newMessage}
+              onChange={e => setNewMessage(e.target.value)}
             />
             <button type='submit' id='textbox-submit'>
               <svg xmlns='http://www.w3.org/2000/svg' fill='none' color='white' viewBox='0 0 24 24' strokeWidth={1.5} stroke='currentColor' className='w-6 h-6'>
