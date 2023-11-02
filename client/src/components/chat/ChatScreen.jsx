@@ -48,9 +48,7 @@ export default function ChatScreen () {
         fetchOnlineUsers(onlineData.online)
       } 
       else if ('text' in onlineData) {
-        if (onlineData.sender === isSelectedUser) {
-          setMessages(prev => ([...prev, {...onlineData}]))
-        }
+        setMessages(prev => ([...prev, {...onlineData}]))
       } 
       else if ('file' in onlineData) {
         if (onlineData.recipient === user.user_id) {

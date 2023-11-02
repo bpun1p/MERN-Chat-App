@@ -111,8 +111,8 @@ wsServer.on('connection', (connection, req) => {
         messageObj.text = text
       }
 
-      console.log(messageObj)
       const messageDoc = await Message.create(messageObj);
+      
       [...wsServer.clients]
         .filter(client => client._id === recipient)
         .forEach(client => client.send(JSON.stringify({
