@@ -32,7 +32,6 @@ app.use(cors({origin: ['http://localhost:5173', 'https://bpun1p-chat-app.onrende
 
 //connect to mongodb
 const connectDatabase = async () => {
-
   try {
     await mongoose.connect(process.env.DB_URI, {
       useNewUrlParser: true,
@@ -42,7 +41,6 @@ const connectDatabase = async () => {
     console.log('connected to database')
   } catch (err) {
     console.log(err)
-    process.exit(1)
   }
 }
 
@@ -75,6 +73,7 @@ wsServer.on('connection', (connection, req) => {
     connection.ping()
     connection.deathTimer = setTimeout(() => {
       connection.isAlive = false
+      clearInterval(connection.timer)
       connection.terminate()
       notifyAboutOnlineUsers()
     }, 1000)
@@ -111,11 +110,14 @@ wsServer.on('connection', (connection, req) => {
       if (text) {
         messageObj.text = text
       }
+
+      console.log(messageObj)
       const messageDoc = await Message.create(messageObj);
       [...wsServer.clients]
         .filter(client => client._id === recipient)
         .forEach(client => client.send(JSON.stringify({
-          text, 
+          text,
+          file,
           sender: sender,
           recipient: recipient,
           _id: messageDoc._id

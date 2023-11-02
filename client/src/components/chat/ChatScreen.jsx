@@ -21,7 +21,6 @@ export default function ChatScreen () {
   const textMessage = useRef()
 
   const ws_url = import.meta.env.VITE_WS_URL
-  // const ws_url = 'wss://bpun1p-chat-app-api.onrender.com'
 
   useEffect(() => {
     connectToWs()
@@ -41,26 +40,24 @@ export default function ChatScreen () {
     fetchOfflineUsers()
   }, [onlineUsers])
 
-  const fetchOfflineUsers = async () => {
-    const offlineUsers = {}
-    const myUserId = user.user_id
-    const res = await getAllUsers({user})
-
-    const allUsersExceptMe = res.data.filter(user => user._id !== myUserId)
-    const offlineUsersArr = allUsersExceptMe.filter(user => !Object.keys(onlineUsers).includes(user._id))
-    offlineUsersArr.forEach(user => offlineUsers[user._id] = user.name) 
-
-    setOfflineUsers(offlineUsers)
-  }
-
-  const fetchOnlineUsers = (usersArr) => {
-    const users = {}
-    if (usersArr.length > 0) { 
-      usersArr.forEach(({id, name}) => {
-        users[id] = name
-      })
+  const handleWsMessage = async (e) => {
+    e.preventDefault()
+    if (e.data.length > 0) {
+      const onlineData = JSON.parse(e.data)
+      if ('online' in onlineData) {
+        fetchOnlineUsers(onlineData.online)
+      } 
+      else if ('text' in onlineData) {
+        if (onlineData.sender === isSelectedUser) {
+          setMessages(prev => ([...prev, {...onlineData}]))
+        }
+      } 
+      else if ('file' in onlineData) {
+        if (onlineData.recipient === user.user_id) {
+          setMessages(prev => ([...prev, {...onlineData}]));
+        }
+      }
     }
-    setOnlineUsers(users)
   }
 
   const connectToWs = () => {
@@ -75,13 +72,77 @@ export default function ChatScreen () {
     })
   }
 
-  const receiveMessages = async (selectedUserId) => {
-    const res = await fetchMessages({selectedUserId, user})
-    setMessages(res.data)
+  const fetchOfflineUsers = async () => {
+    const offlineUsers = {}
+    const myUserId = user.user_id
+    const res = await getAllUsers({user})
+
+    const allUsersExceptMe = res.data.filter(user => user._id !== myUserId)   //returning an array of users that do not match logged in user
+    const offlineUsersArr = allUsersExceptMe.filter(user => !Object.keys(onlineUsers).includes(user._id))  //returning an array of users that are not present in the array of online users including logged in user
+    offlineUsersArr.forEach(user => offlineUsers[user._id] = user.name) // populating offlineUsers object with key-value pairs where each user Id corresponds with the user's name
+
+    setOfflineUsers(offlineUsers)
+  }
+
+  const fetchOnlineUsers = (usersArr) => {
+    const users = {}
+    if (usersArr.length > 0) { 
+      usersArr.forEach(({id, name}) => {
+        users[id] = name
+      })
+    }
+    setOnlineUsers(users)
+  }
+
+  const displayOfflineUsers = () => {
+    if (offlineUsers) {
+      const offlineUsersJSX = Object.keys(offlineUsers).map(userId => (
+        <div 
+          className='user-container' 
+          key={nanoid()}
+          onClick={() => setIsSelectedUser(userId)}
+          style={(userId === isSelectedUser ? {backgroundColor : 'rgb(219,233,246)'}: {backgroundColor : ''})}
+        >
+          <div id='user'>{offlineUsers[userId]}</div>
+          <span className='dot' style={{backgroundColor: 'rgb(192,192,192)'}} ></span>
+        </div>
+      ))
+      return offlineUsersJSX
+    }
+  }
+
+  const displayOnlineUsers = () => {
+    if (onlineUsers) {
+      if ('undefined' in onlineUsers) {
+        delete onlineUsers['undefined']
+      }
+      const onlineUsersExclMyself = {...onlineUsers}
+      delete onlineUsersExclMyself[user.user_id]
+      const onlineUsersJSX = Object.keys(onlineUsersExclMyself).map(userId => (
+        <div 
+          className='user-container' 
+          key={nanoid()}
+          onClick={() => setIsSelectedUser(userId)}
+          style={(userId === isSelectedUser ? {backgroundColor : 'rgb(219,233,246)'}: {backgroundColor : ''})}
+        >
+          <div id='user'>{onlineUsers[userId]}</div>
+          <span className='dot' style={{backgroundColor: 'rgb(95, 236, 107)'}}></span>
+        </div>
+      ))
+      return onlineUsersJSX 
+    }
+  }
+
+  const scrollIntoView = () => {
+    const divTextMessage = textMessage.current
+    if (divTextMessage) {
+      divTextMessage.scrollIntoView({behaviour: 'smooth'})
+    }
   }
 
   const displayMessages = () => {
     const myId = user.user_id
+
     if (isSelectedUser && messages.length > 0) {
       const messagesWithoutDupes = uniqBy(messages, '_id')
       const displayMessagesJSX = messagesWithoutDupes.map(message => (
@@ -127,64 +188,10 @@ export default function ChatScreen () {
       return(displayMessagesJSX)
     }
   }
-  
-  const displayOfflineUsers = () => {
-    if (offlineUsers) {
-      const offlineUsersJSX = Object.keys(offlineUsers).map(userId => (
-        <div 
-          className='user-container' 
-          key={nanoid()}
-          onClick={() => setIsSelectedUser(userId)}
-          style={(userId === isSelectedUser ? {backgroundColor : 'rgb(219,233,246)'}: {backgroundColor : ''})}
-        >
-          <div id='user'>{offlineUsers[userId]}</div>
-          <span className='dot' style={{backgroundColor: 'rgb(192,192,192)'}} ></span>
-        </div>
-      ))
-      return offlineUsersJSX
-    }
-  }
 
-  const displayOnlineUsers = () => {
-    if (onlineUsers) {
-      if ('undefined' in onlineUsers) {
-        delete onlineUsers['undefined']
-      }
-      const onlineUsersExclMyself = {...onlineUsers}
-      delete onlineUsersExclMyself[user.user_id]
-      const onlineUsersJSX = Object.keys(onlineUsersExclMyself).map(userId => (
-        <div 
-          className='user-container' 
-          key={nanoid()}
-          onClick={() => setIsSelectedUser(userId)}
-          style={(userId === isSelectedUser ? {backgroundColor : 'rgb(219,233,246)'}: {backgroundColor : ''})}
-        >
-          <div id='user'>{onlineUsers[userId]}</div>
-          <span className='dot' style={{backgroundColor: 'rgb(95, 236, 107)'}}></span>
-        </div>
-      ))
-      return onlineUsersJSX 
-    }
-  }
-
-  const handleWsMessage = async (e) => {
-    e.preventDefault()
-    if (e.data.length > 0) {
-      const onlineData = JSON.parse(e.data)
-      if ('online' in onlineData) {
-        fetchOnlineUsers(onlineData.online)
-      } 
-      else if ('text' in onlineData)(
-        setMessages(prev => ([...prev, {...onlineData}]))
-      )
-    }
-  }
-
-  const scrollIntoView = () => {
-    const divTextMessage = textMessage.current
-    if (divTextMessage) {
-      divTextMessage.scrollIntoView({behaviour: 'smooth'})
-    }
+  const receiveMessages = async (selectedUserId) => {
+    const res = await fetchMessages({selectedUserId, user})
+    setMessages(res.data)
   }
 
   const sendMessage = (e, file = null) => {
@@ -228,7 +235,7 @@ export default function ChatScreen () {
     reader.onload = () => {
       sendMessage(null, {
         name: file.name,
-        data: reader.result
+        data: reader.result,
       })
     }
   }
@@ -246,7 +253,7 @@ export default function ChatScreen () {
         <div className='chat-message-container'>
           <div className='chat-message-body'>
             {!isSelectedUser ? <span id='no-contacts-selected'>Start Chating Now!</span> : null}
-            {displayMessages()}
+            {isSelectedUser && displayMessages()}
           </div>
         </div>
         {!!isSelectedUser && 
