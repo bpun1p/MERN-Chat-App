@@ -10,7 +10,11 @@ const messageSchema = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   },
-  text: String
+  text: String,
+  file: {
+    name: String,
+    data: String
+  }
 }, { timestamps: true })
 
 module.exports = mongoose.model('Message', messageSchema)

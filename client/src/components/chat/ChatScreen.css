@@ -104,3 +104,36 @@
   width: 95%;
   padding: 1%;
 }
+
+.attach-image-btn {
+  padding: 0;
+  border: none;
+  background: none;
+  margin-right: 1rem;
+  cursor: pointer;
+}
+
+.attach-image {
+  width: auto;
+  height: 55px;
+  padding: 0;
+}
+
+.hidden {
+  width: 55px;
+  height: 55px;
+}
+
+#imgFile, #imgFileAndText {
+  width: 30%;
+}
+
+#imgFileAndText {
+  margin-bottom: 1%;
+}
+
+.text {
+  font-size: 1.5rem;
+  border-radius: 5px;
+  padding: 0.15% 0.5%;
+}

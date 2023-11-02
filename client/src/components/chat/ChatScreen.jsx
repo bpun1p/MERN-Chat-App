@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux'
 import { useFetchMessagesMutation } from '../../slices/chatsApiSlice'
 import { uniqBy } from 'lodash'
 import { useGetAllUsersMutation } from '../../slices/usersApiSlice'
+import landscape from '../../assets/images/landscape.png'
 
 export default function ChatScreen () {
   const [ ws, setWs ] = useState(null)
@@ -89,12 +90,37 @@ export default function ChatScreen () {
             className='message-container'
             style={(message.sender === myId ? {textAlign: 'right'} : {textAlign: 'left'})}
           >
-            <span id='message'
-              style={(message.sender === myId ? {backgroundColor: '#b9bcb9'} : {backgroundColor: '#82baf3'})}
-              ref={textMessage}
-            >
-              {message.text}
-            </span>
+            {message.text && message.file ? 
+              (<>
+                <img
+                  id='imgFileAndText'
+                  src={message?.file?.data}
+                />
+                <div style={{ display: 'block' }}>
+                  <span className='text' style={{ backgroundColor: message.sender === myId ? '#b9bcb9': '#82baf3'}}>{message.text}</span>
+                </div>
+              </>)
+              : 
+              (message.text || message.file ? <span 
+                id='message'
+                style={
+                  (message.sender === myId && message.text ? { backgroundColor: '#b9bcb9' } 
+                  : 
+                  (!message.text && message.file ? { backgroundColor: 'none' } 
+                  :
+                  (message.sender !== myId ? { backgroundColor: '#82baf3' } : null )))
+                }
+                ref={textMessage}
+              >
+                {message.text}
+                {message.file && (
+                  <img 
+                    id='imgFile'
+                    src={message?.file?.data} 
+                  />
+                )}
+              </span> : null)
+            }         
           </div>
         </div>
       ))
@@ -145,7 +171,6 @@ export default function ChatScreen () {
     e.preventDefault()
     if (e.data.length > 0) {
       const onlineData = JSON.parse(e.data)
-      console.log('Connected')
       if ('online' in onlineData) {
         fetchOnlineUsers(onlineData.online)
       } 
@@ -162,24 +187,49 @@ export default function ChatScreen () {
     }
   }
 
-  const sendMessage = (e) => {
-    e.preventDefault()
-    if (newMessage !== '') {
-      ws.send(JSON.stringify({
+  const sendMessage = (e, file = null) => {
+    if (e) e.preventDefault()
+    if (newMessage.trim() !== '' || file) {
+      const wsData = {
         recipient: isSelectedUser,
         sender: user.user_id,
-        text: newMessage
-      }))
-      setMessages(prev => ([...prev, {
-        text: newMessage, 
+      }
+
+      if (file) {
+        wsData.file = file
+      }
+
+      if (newMessage.trim() !== '') {
+        wsData.text = newMessage
+      }
+    
+      ws.send(JSON.stringify(wsData))
+    
+      const newMessageObject = {
+        text: newMessage.trim() !== '' ? newMessage : null, // Set to an empty string if newMessage is empty
+        file: file ? file : null,
         sender: user.user_id,
         recipient: isSelectedUser,
         _id: Date.now()
-      }]))
+      }
+
+      setMessages((prev) => [...prev, newMessageObject]);
       setNewMessage('')
       scrollIntoView()
     } else {
       toast.error('Filled in field required')
+    }
+  }
+
+  const sendFile = (e) => {
+    const file = e?.target?.files?.[0]
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onload = () => {
+      sendMessage(null, {
+        name: file.name,
+        data: reader.result
+      })
     }
   }
 
@@ -201,11 +251,15 @@ export default function ChatScreen () {
         </div>
         {!!isSelectedUser && 
           <form className='chat-text-container' onSubmit={sendMessage}>
+            <label type='button' className='attach-image-btn' >
+              <input type='file' className='hidden'onChange={sendFile}/>
+              <img className='attach-image' src={landscape}/>
+            </label>
             <input type='text' 
-            placeholder='Type your message here' 
-            id='chat-textbox'
-            value={newMessage}
-            onChange={e => setNewMessage(e.target.value)}
+              placeholder='Type your message here' 
+              id='chat-textbox'
+              value={newMessage}
+              onChange={e => setNewMessage(e.target.value)}
             />
             <button type='submit' id='textbox-submit'>
               <svg xmlns='http://www.w3.org/2000/svg' fill='none' color='white' viewBox='0 0 24 24' strokeWidth={1.5} stroke='currentColor' className='w-6 h-6'>
