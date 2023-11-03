@@ -1,23 +1,24 @@
-import Register from './register/Register'
-import Login from './login/Login'
-import './AccessPage.css'
-import { useSelector } from 'react-redux'
-import { Navigate } from 'react-router-dom'
+import Register from './register/Register';
+import Login from './login/Login';
+import './AccessPage.css';
+import { useSelector } from 'react-redux';
+import { Navigate } from 'react-router-dom';
 
 export default function Access() {
-  const { user } = useSelector((state) => state.auth)
+  const { user } = useSelector((state) => state.auth);
+
   return (
     <>
-      {!user ? 
-        <>
-          <div className='access-container'>
-            <div className='access-body'>
-              <Login/>
-              <Register/>
-            </div>
+      {!user ? (
+        <div className='access-container'>
+          <div className='access-body'>
+            <Login />
+            <Register />
           </div>
-        </>
-      : <Navigate to='/chats'/>}
+        </div>
+      ) : (
+        <Navigate to='/chats' />
+      )}
     </>
-  )
+  );
 }

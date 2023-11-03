@@ -1,15 +1,15 @@
-import './Menu.css'
-import '../utils/buttons/settingsClass.css'
-import { Link } from 'react-router-dom'
-import AvatarIcon from '../../assets/images/avatarImage.png'
-import ChatIcon from '../../assets/images/bubbleChat.png'
-import { useSelector } from 'react-redux'
+import './Menu.css';
+import '../utils/buttons/settingsClass.css';
+import { Link } from 'react-router-dom';
+import AvatarIcon from '../../assets/images/avatarImage.png';
+import ChatIcon from '../../assets/images/bubbleChat.png';
+import { useSelector } from 'react-redux';
 import Tooltip from 'rc-tooltip';
 import PropTypes from 'prop-types';
 import 'rc-tooltip/assets/bootstrap.css';
 
 export default function Menu(props) {
-  const { user } = useSelector((state) => state.auth)
+  const { user } = useSelector((state) => state.auth);
   const renderTooltip = <span>Select to change your user info</span>;
 
   return (
@@ -18,13 +18,13 @@ export default function Menu(props) {
       </div>
       <div className='menu-header'>
         <div className='menu-header-user'>
-          {user ? 
+          {user ? (
             <Tooltip placement='bottom' overlay={renderTooltip}>
               <Link to={'/profile'}><img id='profile-image' src={AvatarIcon}/></Link>
             </Tooltip>
-            :
+          ) : (
             <Link to={'/profile'}><img id='profile-image' src={AvatarIcon}/></Link>
-        }
+          )}
           {user && <span className='menu-header-user-name'>{user.name}</span>}
         </div>
         <div className='menu-header-settings'>
@@ -42,10 +42,11 @@ export default function Menu(props) {
         </div>
       </nav>
     </div>
-  )
+  );
 }
 
 Menu.propTypes = {
-  chatsClicked: PropTypes.func
-}
+  chatsClicked: PropTypes.func,
+};
+
 
