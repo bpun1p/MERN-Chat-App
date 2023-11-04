@@ -1,8 +1,7 @@
-import { apiSlice } from "./apiSlice"
-const base_url = import.meta.env.VITE_URL
-// const base_url = 'https://bpun1p-chat-app-api.onrender.com'
+import { apiSlice } from "./apiSlice";
+const base_url = import.meta.env.VITE_URL;
 
-export const chatsApiSlice = apiSlice.injectEndpoints({         //creates the endpoint and then inject into the store/builder
+export const chatsApiSlice = apiSlice.injectEndpoints({   //creates the endpoint and then inject into the store/builder
   endpoints: (builder) => ({
     fetchMessages: builder.mutation({
       query: (data) => ({
@@ -16,6 +15,6 @@ export const chatsApiSlice = apiSlice.injectEndpoints({         //creates the en
       })
     })
   })
-})
+});
 
-export const { useFetchMessagesMutation } = chatsApiSlice
+export const { useFetchMessagesMutation } = chatsApiSlice;

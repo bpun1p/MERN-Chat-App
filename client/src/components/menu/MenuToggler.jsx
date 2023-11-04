@@ -1,22 +1,22 @@
-import './MenuToggler.css'
-import { useState } from 'react'
-import Menu from './Menu'
+import './MenuToggler.css';
+import { useState } from 'react';
+import Menu from './Menu';
 
 export default function MenuToggler() {
-  const [burgerClass, setBurgerClass] = useState('burger-bar unclicked')
-  const [menuClass, setMenuClass] = useState('menu hidden')
-  const [isMenuClicked, setIsMenuClicked] = useState(false)
+  const [burgerClass, setBurgerClass] = useState('burger-bar unclicked');
+  const [menuClass, setMenuClass] = useState('menu hidden');
+  const [isMenuClicked, setIsMenuClicked] = useState(false);
 
   const updateMenu = () => {
-    if(!isMenuClicked) {
-      setBurgerClass('burger-bar clicked')
-      setMenuClass('menu visible')
+    if (!isMenuClicked) {
+      setBurgerClass('burger-bar clicked');
+      setMenuClass('menu visible');
     } else {
-      setBurgerClass('burger-bar unclicked')
-      setMenuClass('menu hidden')
+      setBurgerClass('burger-bar unclicked');
+      setMenuClass('menu hidden');
     }
-    setIsMenuClicked(!isMenuClicked)
-  }
+    setIsMenuClicked(!isMenuClicked);
+  };
 
   return (
     <>
@@ -33,5 +33,5 @@ export default function MenuToggler() {
         </div>
       </div>
     </>
-  )
+  );
 }

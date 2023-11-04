@@ -1,47 +1,47 @@
-import { useState } from 'react'
-import './Login.css'
-import { useNavigate } from 'react-router-dom'
-import { useDispatch } from 'react-redux'
-import { useLoginMutation } from '../../../slices/authApiSlice'
-import { setCredentials } from '../../../slices/authSlice'
-import { toast } from 'react-toastify'
+import { useState } from 'react';
+import './Login.css';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { useLoginMutation } from '../../../slices/authApiSlice';
+import { setCredentials } from '../../../slices/authSlice';
+import { toast } from 'react-toastify';
 
 export default function Login() {
-  const [ email, setEmail ] = useState(null)
-  const [ password, setPassword ] = useState(null)
-  
-  const [ login, { isLoading } ] = useLoginMutation()
-  const navigate = useNavigate()
-  const dispatch = useDispatch()
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const [login, { isLoading }] = useLoginMutation();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleLoginClicked = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
     if (!email || !password) {
-      toast.error('All fields must be filled!')
-      return
+      toast.error('All fields must be filled!');
+      return;
     }
     try {
-      console.log({email, password})
-      const res = await login({ email, password }).unwrap()
-      dispatch(setCredentials({...res}))
-      navigate('/chats')
-    } catch(err) {
+      console.log({ email, password });
+      const res = await login({ email, password }).unwrap();
+      dispatch(setCredentials({ ...res }));
+      navigate('/chats');
+    } catch (err) {
       if (err.data && err.data.error) {
-        toast.error(err.data.error)
-        return
+        toast.error(err.data.error);
+        return;
       }
     }
-    return
+    return;
   }
 
   const handleGuestAccessClicked = async (e) => {
-    e.preventDefault()
-    const email = import.meta.env.VITE_GUEST_EMAIL 
-    const password = import.meta.env.VITE_GUEST_PASS
+    e.preventDefault();
+    const email = import.meta.env.VITE_GUEST_EMAIL;
+    const password = import.meta.env.VITE_GUEST_PASS;
 
-    const res = await login({ email, password }).unwrap()
-    dispatch(setCredentials({...res}))
-    navigate('/chats')
+    const res = await login({ email, password }).unwrap();
+    dispatch(setCredentials({ ...res }));
+    navigate('/chats');
   }
 
   return (
@@ -67,5 +67,5 @@ export default function Login() {
         </form>
       </div>
     </div>
-  )
+  );
 }
