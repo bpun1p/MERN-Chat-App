@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -22,12 +24,22 @@ export default function ActiTrack() {
   const month = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   const today = new Date();
   const currMonth = month[today.getMonth()];
+  const { user } = useSelector((state) => state.auth);
+  const [isVisitorCount, setVisitorCount] = useState([]);
+  const [islast7Dates, setLast7Dates] = useState([]);
+
+  useEffect(() => {
+    const visitorCount = user.visitorData.map(data => data.visitorCount);
+    const last7Dates = user.visitorData.map(data => `${data.month}/${data.day}`);
+    setVisitorCount(visitorCount);
+    setLast7Dates(last7Dates);
+  }, [])
 
   const data = {
-    labels: getLast7Days(),
+    labels: islast7Dates,
     datasets: [{
-      label: `# Visitors in the week of ${currMonth}`,
-      data: [3, 6, 9, 20, 10, 2, 6],
+      label: `Visitors of the week of ${currMonth}`,
+      data: isVisitorCount,
       borderColor: 'blue',
       pointBorderColor: 'blue',
       tension: 0.4
@@ -43,17 +55,6 @@ export default function ActiTrack() {
         max: 30
       }
     }
-  }
-
-  function getLast7Days() {
-    const dates = [];
-  
-    for (let i = 6; i >= 0; i--) {
-      const date = new Date(today);
-      date.setDate(today.getDate() - i);
-      dates.push(date.toString().substring(4, 10));
-    }
-    return dates;
   }
 
   return (
