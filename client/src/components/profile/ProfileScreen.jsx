@@ -16,8 +16,8 @@ function ProfileScreen() {
   const [update] = useUpdateUserMutation();
 
   useEffect(() => {
-    setName(() => user.name);
-    setEmail(() => user.email);
+    setName(user.name);
+    setEmail(user.email);
   }, [user.name, user.email]);
 
   const submitUpdateHandler = async (e) => {

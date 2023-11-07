@@ -60,7 +60,7 @@ const loginUser = async (req, res) => {
     }
     const token = createToken(user_id, email, name);
 
-    await visitorTracker(email);
+    // await visitorTracker(email);
     const visitorData = await visitorDataFromLast7Days();
 
     res.status(200).json({ email, name, user_id, token, visitorData});
