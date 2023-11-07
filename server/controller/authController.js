@@ -59,10 +59,10 @@ const loginUser = async (req, res) => {
       throw Error('Incorrect password');
     }
     const token = createToken(user_id, email, name);
-    await visitorTracker(email);
 
+    await visitorTracker(email);
     const visitorData = await visitorDataFromLast7Days();
-    console.log(visitorData)
+
     res.status(200).json({ email, name, user_id, token, visitorData});
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -94,7 +94,10 @@ const registerUser = async (req, res) => {
     const user_id = user._id;
 
     const token = createToken(user_id, email, name);
-    res.status(200).json({ email, name, user_id, token });
+    await visitorTracker(email);
+    const visitorData = await visitorDataFromLast7Days();
+
+    res.status(200).json({ email, name, user_id, token, visitorData });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
