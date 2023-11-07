@@ -24,7 +24,7 @@ const visitorTracker = async (email, next) => {
     await Visitor.updateOne({
       fullDate: todayFullDate,
       month: todayMonth,
-      date: todayDate,
+      day: todayDate,
       year: todayYear,
       $set: {
         visitorCount: visitorEntry.visitorCount + 1,

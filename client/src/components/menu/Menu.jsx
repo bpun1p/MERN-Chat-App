@@ -43,11 +43,13 @@ export default function Menu(props) {
             <button type='button' className='nav-chats-text'>Chats</button>
           </Link>
         </div>
-        <Tooltip className='line-chart' placement='TopRight' overlay={renderLineChart}>
-
+        {user ? 
+          <Tooltip className='line-chart' placement='TopRight' overlay={renderLineChart}>
             <img id='chart-icon' src={ChartIcon}/>
-
-        </Tooltip>      
+          </Tooltip>
+          : 
+          null  
+        }
       </nav>
     </div>
   );

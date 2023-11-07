@@ -56,7 +56,7 @@ export default function ActiTrack() {
       }
     }
   }
-
+  console.log(user.visitorData)
   return (
     <>
       <div style={
