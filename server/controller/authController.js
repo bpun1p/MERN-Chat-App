@@ -2,6 +2,7 @@ const User = require('../models/userModel');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const validator = require('validator');
+const visitorTracker = require('../middleware/visitorTracker');
 
 const createToken = (user_id, email, name) => {
   return jwt.sign({ user_id, email, name }, process.env.SECRET, { expiresIn: '7d' });
@@ -9,14 +10,12 @@ const createToken = (user_id, email, name) => {
 
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
-  console.log(email);
   try {
     if (!email || !password) {
       throw Error('All fields must be filled');
     }
 
     const user = await User.findOne({ email });
-
     if (!user) {
       throw Error('Incorrect email');
     }
@@ -30,7 +29,9 @@ const loginUser = async (req, res) => {
       throw Error('Incorrect password');
     }
     const token = createToken(user_id, email, name);
-    res.status(200).json({ email, name, user_id, token });
+    await visitorTracker(email)
+
+    // res.status(200).json({ email, name, user_id, token,  });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
