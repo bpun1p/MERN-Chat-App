@@ -11,7 +11,7 @@ const messageSchema = new Schema({
     ref: 'User',
   },
   text: String,
-  file: {
+  image: {
     name: String,
     data: String,
   },

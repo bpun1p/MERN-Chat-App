@@ -48,7 +48,7 @@ export default function ChatScreen() {
         fetchOnlineUsers(onlineData.online);
       } else if ('text' in onlineData) {
         setMessages((prev) => [...prev, { ...onlineData }]);
-      } else if ('file' in onlineData) {
+      } else if ('image' in onlineData) {
         if (onlineData.recipient === user.user_id) {
           setMessages((prev) => [...prev, { ...onlineData }]);
         }
@@ -158,9 +158,9 @@ export default function ChatScreen() {
             className='message-container'
             style={message.sender === myId ? { textAlign: 'right' } : { textAlign: 'left' }}
           >
-            {message.text && message.file ? (
+            {message.text && message.image ? (
               <>
-                <img id='imgFileAndText' src={message?.file?.data} />
+                <img id='imgAndText' src={message?.image?.data} />
                 <div style={{ display: 'block' }}>
                   <span
                     className='text'
@@ -173,13 +173,13 @@ export default function ChatScreen() {
                 </div>
               </>
             ) : (
-              message.text || message.file ? (
+              message.text || message.image ? (
                 <span
                   id='message'
                   style={
                     message.sender === myId && message.text
                       ? { backgroundColor: '#b9bcb9' }
-                      : !message.text && message.file
+                      : !message.text && message.image
                       ? { backgroundColor: 'none' }
                       : message.sender !== myId
                       ? { backgroundColor: '#82baf3' }
@@ -188,8 +188,8 @@ export default function ChatScreen() {
                   ref={textMessage}
                 >
                   {message.text}
-                  {message.file && (
-                    <img id='imgFile' src={message?.file?.data} />
+                  {message.image && (
+                    <img id='imgFile' src={message?.image?.data} />
                   )}
                 </span>
               ) : null
@@ -206,16 +206,16 @@ export default function ChatScreen() {
     setMessages(res.data);
   };
 
-  const sendMessage = (e, file = null) => {
+  const sendMessage = (e, image = null) => {
     if (e) e.preventDefault();
-    if (newMessage.trim() !== '' || file) {
+    if (newMessage.trim() !== '' || image) {
       const wsData = {
         recipient: isSelectedUser,
         sender: user.user_id,
       };
 
-      if (file) {
-        wsData.file = file;
+      if (image) {
+        wsData.image = image;
       }
 
       if (newMessage.trim() !== '') {
@@ -226,7 +226,7 @@ export default function ChatScreen() {
 
       const newMessageObject = {
         text: newMessage.trim() !== '' ? newMessage : null,
-        file: file ? file : null,
+        image: image ? image : null,
         sender: user.user_id,
         recipient: isSelectedUser,
         _id: Date.now(),
@@ -240,16 +240,21 @@ export default function ChatScreen() {
     }
   };
 
-  const sendFile = (e) => {
-    const file = e?.target?.files?.[0];
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => {
-      sendMessage(null, {
-        name: file.name,
-        data: reader.result,
-      });
-    };
+  const sendImage = (e) => {
+    e.preventDefault();
+    const imageFile = e?.target?.files?.[0];
+    if (imageFile.type.startsWith('image/')){
+      const reader = new FileReader();
+      reader.readAsDataURL(imageFile);
+      reader.onload = () => {
+        sendMessage(null, {
+          name: imageFile.name,
+          data: reader.result,
+        });
+      }
+    } else {
+      toast.error('Selected file is not an image.');
+    }
   };
 
   return (
@@ -271,7 +276,7 @@ export default function ChatScreen() {
         {!!isSelectedUser && (
           <form className='chat-text-container' onSubmit={sendMessage}>
             <label type='button' className='attach-image-btn'>
-              <input type='file' className='hidden' onChange={sendFile} />
+              <input type='file' className='hidden' onChange={sendImage} />
               <img className='attach-image' src={landscape} alt='Landscape' />
             </label>
             <input

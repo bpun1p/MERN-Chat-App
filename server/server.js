@@ -92,15 +92,15 @@ wsServer.on('connection', (connection, req) => {
 
   connection.on('message', async (message) => {
     const messageData = JSON.parse(message.toString());
-    const { recipient, sender, text, file } = messageData;
-    if (sender && recipient && (text || file)) {
+    const { recipient, sender, text, image } = messageData;
+    if (sender && recipient && (text || image)) {
       const messageObj = {
         sender: sender,
         recipient: recipient,
       };
 
-      if (file) {
-        messageObj.file = file;
+      if (image) {
+        messageObj.image = image;
       }
 
       if (text) {
@@ -113,7 +113,7 @@ wsServer.on('connection', (connection, req) => {
         .filter(client => client._id === recipient)
         .forEach(client => client.send(JSON.stringify({
           text,
-          file,
+          image,
           sender: sender,
           recipient: recipient,
           _id: messageDoc._id,
