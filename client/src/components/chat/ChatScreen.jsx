@@ -264,7 +264,7 @@ export default function ChatScreen() {
       <div className='chat-body'>
         <div className='chat-message-container'>
           <div className='chat-message-body'>
-            {isSelectedUser && <span id='no-contacts-selected'>Start Chatting Now!</span>}
+            {isSelectedUser && messages.length === 0 ? <span id='no-contacts-selected'>Start Chatting Now!</span> : null}
             {isSelectedUser && displayMessages()}
           </div>
         </div>
