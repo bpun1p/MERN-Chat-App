@@ -105,7 +105,7 @@
   padding: 1%;
 }
 
-.attach-image-btn {
+.attach-image-btn, .attach-file-btn {
   padding: 0;
   border: none;
   background: none;
@@ -113,7 +113,7 @@
   cursor: pointer;
 }
 
-.attach-image {
+.attach-image, .attach-file {
   width: auto;
   height: 55px;
   padding: 0;
@@ -131,5 +131,16 @@
 .text {
   font-size: 1.5rem;
   border-radius: 5px;
+  padding: 0.15% 0.5%;
+}
+
+.attach-file-mini{
+  width: auto;
+  height: 25px;
+  padding: 0;
+  vertical-align: middle;
+}
+
+.file-attachment {
   padding: 0.15% 0.5%;
 }
