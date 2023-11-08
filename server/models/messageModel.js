@@ -11,10 +11,11 @@ const messageSchema = new Schema({
     ref: 'User',
   },
   text: String,
-  file: {
+  image: {
     name: String,
     data: String,
   },
+  file: String
 }, { timestamps: true });
 
 module.exports = mongoose.model('Message', messageSchema);

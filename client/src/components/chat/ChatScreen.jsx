@@ -6,7 +6,8 @@ import { nanoid } from 'nanoid';
 import { uniqBy } from 'lodash';
 import { useFetchMessagesMutation } from '../../slices/chatsApiSlice';
 import { useGetAllUsersMutation } from '../../slices/usersApiSlice';
-import landscape from '../../assets/images/landscape.png';
+import imageIcon from '../../assets/images/landscape.png';
+import attachFileIcon from '../../assets/images/attach-file.png';
 
 export default function ChatScreen() {
   const [ws, setWs] = useState(null);
@@ -21,6 +22,7 @@ export default function ChatScreen() {
   const textMessage = useRef();
 
   const ws_url = import.meta.env.VITE_WS_URL;
+  const upload_url = import.meta.env.VITE_UPLOAD_URL;
 
   useEffect(() => {
     connectToWs();
@@ -48,8 +50,13 @@ export default function ChatScreen() {
         fetchOnlineUsers(onlineData.online);
       } else if ('text' in onlineData) {
         setMessages((prev) => [...prev, { ...onlineData }]);
+      } else if ('image' in onlineData) {
+        if (onlineData.recipient === user.user_id) {
+          setMessages((prev) => [...prev, { ...onlineData }]);
+        }
       } else if ('file' in onlineData) {
         if (onlineData.recipient === user.user_id) {
+          console.log(onlineData)
           setMessages((prev) => [...prev, { ...onlineData }]);
         }
       }
@@ -149,7 +156,6 @@ export default function ChatScreen() {
 
   const displayMessages = () => {
     const myId = user.user_id;
-
     if (isSelectedUser && messages.length > 0) {
       const messagesWithoutDupes = uniqBy(messages, '_id');
       const displayMessagesJSX = messagesWithoutDupes.map((message) => (
@@ -158,9 +164,9 @@ export default function ChatScreen() {
             className='message-container'
             style={message.sender === myId ? { textAlign: 'right' } : { textAlign: 'left' }}
           >
-            {message.text && message.file ? (
+            {message.text && message.image ? (
               <>
-                <img id='imgFileAndText' src={message?.file?.data} />
+                <img id='imgAndText' src={message?.image?.data} />
                 <div style={{ display: 'block' }}>
                   <span
                     className='text'
@@ -173,13 +179,13 @@ export default function ChatScreen() {
                 </div>
               </>
             ) : (
-              message.text || message.file ? (
+              message.text || message.image || message.file ? (
                 <span
                   id='message'
                   style={
-                    message.sender === myId && message.text
+                    message.sender === myId && message.text || message.file
                       ? { backgroundColor: '#b9bcb9' }
-                      : !message.text && message.file
+                      : !message.text && message.image
                       ? { backgroundColor: 'none' }
                       : message.sender !== myId
                       ? { backgroundColor: '#82baf3' }
@@ -187,10 +193,17 @@ export default function ChatScreen() {
                   }
                   ref={textMessage}
                 >
-                  {message.text}
-                  {message.file && (
-                    <img id='imgFile' src={message?.file?.data} />
-                  )}
+                {message.file && (
+                  <>
+                    <img className='attach-file-mini' src={attachFileIcon} alt='attachFile' />
+                    <a className='file-attachment' href={`${upload_url}${message.file}`} target="_blank" rel="noreferrer">
+                      {message.file}
+                    </a>
+                  </>
+                )}
+                  <br/>
+                  {message.text ? <span className='text'>{message.text}</span> : null}
+                  {message.image && ( <img id='imgFile' src={message?.image?.data}/> )}
                 </span>
               ) : null
             )}
@@ -206,16 +219,19 @@ export default function ChatScreen() {
     setMessages(res.data);
   };
 
-  const sendMessage = (e, file = null) => {
+  const sendMessage = (e, readerResult, fileType = null) => {
     if (e) e.preventDefault();
-    if (newMessage.trim() !== '' || file) {
+    if (newMessage.trim() !== '' || fileType) {
       const wsData = {
         recipient: isSelectedUser,
         sender: user.user_id,
       };
 
-      if (file) {
-        wsData.file = file;
+      if (fileType === 'image') {
+        wsData.image = readerResult;
+      } else if (fileType === 'file') {
+        console.log(readerResult)
+        wsData.file = readerResult;
       }
 
       if (newMessage.trim() !== '') {
@@ -226,7 +242,8 @@ export default function ChatScreen() {
 
       const newMessageObject = {
         text: newMessage.trim() !== '' ? newMessage : null,
-        file: file ? file : null,
+        image: fileType === 'image' ? readerResult : null,
+        file: fileType === 'file' ? readerResult.name : null,
         sender: user.user_id,
         recipient: isSelectedUser,
         _id: Date.now(),
@@ -240,16 +257,40 @@ export default function ChatScreen() {
     }
   };
 
+  const sendImage = (e) => {
+    e.preventDefault();
+    const imageFile = e?.target?.files?.[0];
+    if (imageFile.type.startsWith('image/')){
+      const reader = new FileReader();
+      reader.readAsDataURL(imageFile);
+      reader.onload = () => {
+        sendMessage(null, {
+          name: imageFile.name,
+          data: reader.result,
+        }, 'image');
+      }
+    } else {
+      toast.error('Selected file is not an image.');
+    }
+  };
+
   const sendFile = (e) => {
+    e.preventDefault();
     const file = e?.target?.files?.[0];
+
+    //create unique name for file
+    const parts = file.name.split('.');
+    const ext = parts[parts.length -1];
+    const fileName = Date.now() + '.' + ext;
+    
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => {
       sendMessage(null, {
-        name: file.name,
+        name: fileName,
         data: reader.result,
-      });
-    };
+      }, 'file');
+    }
   };
 
   return (
@@ -271,8 +312,12 @@ export default function ChatScreen() {
         {!!isSelectedUser && (
           <form className='chat-text-container' onSubmit={sendMessage}>
             <label type='button' className='attach-image-btn'>
+              <input type='file' className='hidden' onChange={sendImage} />
+              <img className='attach-image' src={imageIcon} alt='imageIcon' />
+            </label>
+            <label type='button' className='attach-file-btn'>
               <input type='file' className='hidden' onChange={sendFile} />
-              <img className='attach-image' src={landscape} alt='Landscape' />
+              <img className='attach-file' src={attachFileIcon} alt='attachFile' />
             </label>
             <input
               type='text'
