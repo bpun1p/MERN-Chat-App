@@ -30,8 +30,7 @@ const visitorDataFromLast7Days = async () => {
         visitorCount: 0,
         users: [],
       })
-    }
-    if (visitorEntry) {
+    } else if (visitorEntry) {
       data.push(visitorEntry)
     };
   };
