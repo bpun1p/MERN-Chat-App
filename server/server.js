@@ -9,10 +9,11 @@ const ws = require('ws');
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const Message = require('./models/messageModel');
+const path = require('path'); 
 
 // Express app
 const app = express();
-app.use('/uploads', express.static(__dirname + '/uploads'));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); 
 app.set("trust proxy", 1);
 
 // Middleware to read body, parse it, and place results in req.body
@@ -92,15 +93,25 @@ wsServer.on('connection', (connection, req) => {
 
   connection.on('message', async (message) => {
     const messageData = JSON.parse(message.toString());
-    const { recipient, sender, text, file } = messageData;
-    if (sender && recipient && (text || file)) {
+    const { recipient, sender, text, image, file } = messageData;
+    if (sender && recipient && (text || image || file)) {
       const messageObj = {
         sender: sender,
         recipient: recipient,
       };
 
+      if (image) {
+        messageObj.image = image;
+      }
+
       if (file) {
-        messageObj.file = file;
+        console.log(file.name)
+        const path = __dirname + '/uploads/' + file.name;
+        const bufferData = Buffer.from(file.data.split(',')[1], 'base64');
+        fs.writeFile(path, bufferData, () => {
+          console.log('file saved' + path)
+        })
+        messageObj.file = file.name
       }
 
       if (text) {
@@ -113,6 +124,7 @@ wsServer.on('connection', (connection, req) => {
         .filter(client => client._id === recipient)
         .forEach(client => client.send(JSON.stringify({
           text,
+          image,
           file,
           sender: sender,
           recipient: recipient,

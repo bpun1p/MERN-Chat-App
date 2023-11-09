@@ -1,22 +1,50 @@
 const User = require('../models/userModel');
+const Visitor = require('../models/visitorModel');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const validator = require('validator');
+const visitorTracker = require('../middleware/visitorTracker');
 
 const createToken = (user_id, email, name) => {
   return jwt.sign({ user_id, email, name }, process.env.SECRET, { expiresIn: '7d' });
 };
 
+const visitorDataFromLast7Days = async () => {
+  const data = [];
+
+  for (let i = 6; i >= 0; i--) {
+    const today = new Date();
+    today.setDate(today.getDate() - i);
+    const fullDate = `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear()}`;
+    const todayMonth = today.getMonth() + 1;
+    const todayDate = today.getDate();
+    const todayYear = today.getFullYear();
+
+    const visitorEntry = await Visitor.findOne({ fullDate: fullDate });
+    if (!visitorEntry) {
+      data.push({
+        fullDate: fullDate,
+        month: todayMonth,
+        day: todayDate,
+        year: todayYear,
+        visitorCount: 0,
+        users: [],
+      })
+    } else if (visitorEntry) {
+      data.push(visitorEntry)
+    };
+  };
+  return data;
+};
+
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
-  console.log(email);
   try {
     if (!email || !password) {
       throw Error('All fields must be filled');
     }
 
     const user = await User.findOne({ email });
-
     if (!user) {
       throw Error('Incorrect email');
     }
@@ -30,7 +58,11 @@ const loginUser = async (req, res) => {
       throw Error('Incorrect password');
     }
     const token = createToken(user_id, email, name);
-    res.status(200).json({ email, name, user_id, token });
+
+    await visitorTracker(email);
+    const visitorData = await visitorDataFromLast7Days();
+
+    res.status(200).json({ email, name, user_id, token, visitorData});
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -61,7 +93,10 @@ const registerUser = async (req, res) => {
     const user_id = user._id;
 
     const token = createToken(user_id, email, name);
-    res.status(200).json({ email, name, user_id, token });
+    await visitorTracker(email);
+    const visitorData = await visitorDataFromLast7Days();
+
+    res.status(200).json({ email, name, user_id, token, visitorData });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
