@@ -4,7 +4,7 @@ import Menu from './Menu';
 
 export default function MenuToggler() {
   const [burgerClass, setBurgerClass] = useState('burger-bar unclicked');
-  const [menuClass, setMenuClass] = useState('menu hidden');
+  const [menuClass, setMenuClass] = useState('menu visible');
   const [isMenuClicked, setIsMenuClicked] = useState(false);
 
   const updateMenu = () => {
