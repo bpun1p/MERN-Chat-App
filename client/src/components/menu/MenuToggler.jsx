@@ -3,7 +3,7 @@ import { useState } from 'react';
 import Menu from './Menu';
 
 export default function MenuToggler() {
-  const [burgerClass, setBurgerClass] = useState('burger-bar unclicked');
+  const [burgerClass, setBurgerClass] = useState('burger-bar clicked');
   const [menuClass, setMenuClass] = useState('menu visible');
   const [isMenuClicked, setIsMenuClicked] = useState(false);
 

@@ -46,8 +46,8 @@ nav {
 }
 
 #profile-image {
-  width: 35%;
-  min-width: 90px;
+  width: 25%;
+  min-width: 70px;
   max-width: 110px;
   height: auto;
 }

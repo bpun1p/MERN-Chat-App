@@ -23,7 +23,7 @@ export default function Menu(props) {
       <div className='menu-header'>
         <div className='menu-header-user'>
           <Tooltip placement='bottom' overlay={renderProfileTooltip}>
-            <Link to={'/profile'}><img id='profile-image' src={AvatarIcon}/></Link>
+            <Link to={user && '/profile'}><img id='profile-image' src={AvatarIcon}/></Link>
           </Tooltip>
           {user && <span className='menu-header-user-name'>{user.name}</span>}
         </div>
