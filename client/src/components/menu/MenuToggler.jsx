@@ -9,11 +9,11 @@ export default function MenuToggler() {
 
   const updateMenu = () => {
     if (!isMenuClicked) {
-      setBurgerClass('burger-bar clicked');
-      setMenuClass('menu visible');
-    } else {
       setBurgerClass('burger-bar unclicked');
       setMenuClass('menu hidden');
+    } else {
+      setBurgerClass('burger-bar clicked');
+      setMenuClass('menu visible');
     }
     setIsMenuClicked(!isMenuClicked);
   };
