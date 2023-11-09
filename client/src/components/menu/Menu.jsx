@@ -12,7 +12,8 @@ import ActiTrack from '../actiTrack/ActiTrack';
 
 export default function Menu(props) {
   const { user } = useSelector((state) => state.auth);
-  const renderTooltip = user ? <span>Select to change personal settings</span> : <span>Login to access personal settings</span>;
+  const renderProfileTooltip = <span>{ user ? 'Select to change personal settings' : 'Login to access personal settings' }</span>;
+  const renderChatTooltip = <span>{ user ? 'Select to view your chats' : 'Login to start chatting!' }</span>;
   const renderLineChart = <ActiTrack/>
 
   return (
@@ -21,7 +22,7 @@ export default function Menu(props) {
       </div>
       <div className='menu-header'>
         <div className='menu-header-user'>
-          <Tooltip placement='bottom' overlay={renderTooltip}>
+          <Tooltip placement='bottom' overlay={renderProfileTooltip}>
             <Link to={'/profile'}><img id='profile-image' src={AvatarIcon}/></Link>
           </Tooltip>
           {user && <span className='menu-header-user-name'>{user.name}</span>}
@@ -31,6 +32,7 @@ export default function Menu(props) {
         </div>
       </div>
       <nav>
+      <Tooltip placement='bottom' overlay={renderChatTooltip}>
         <div className='nav-chat-container'>
           <Link to={'/chats'} className='nav-chats-link' onClick={props.chatsClicked}>
             <div className='nav-header-chat-icon-container'>
@@ -39,6 +41,7 @@ export default function Menu(props) {
             <button type='button' className='nav-chats-text'>Chats</button>
           </Link>
         </div>
+        </Tooltip>
         {user ? 
           <Tooltip className='line-chart' placement='TopRight' overlay={renderLineChart}>
             <img id='chart-icon' src={ChartIcon}/>
