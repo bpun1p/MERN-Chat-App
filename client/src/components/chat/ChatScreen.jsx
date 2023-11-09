@@ -21,6 +21,13 @@ export default function ChatScreen() {
   const [getAllUsers] = useGetAllUsersMutation();
   const textMessage = useRef();
 
+  const chatBackgroundColor = '#DBE9F6';
+  const selectedUserBackgroundColor = '#DBE9F6';
+  const myUserMsgBackgroundColor = '#b9bcb9';
+  const opposingUserBackgroundColor = '#82baf3'
+  const offlineIconColor = '#C0C0C0';
+  const onlineIconColor = '#5FEC6B';
+
   const ws_url = import.meta.env.VITE_WS_URL;
   const upload_url = import.meta.env.VITE_UPLOAD_URL;
 
@@ -109,12 +116,12 @@ export default function ChatScreen() {
           onClick={() => setIsSelectedUser(userId)}
           style={
             userId === isSelectedUser
-              ? { backgroundColor: 'rgb(219,233,246)' }
-              : { backgroundColor: '' }
+              ? { backgroundColor: chatBackgroundColor }
+              : { backgroundColor: 'none' }
           }
         >
           <div id='user'>{offlineUsers[userId]}</div>
-          <span className='dot' style={{ backgroundColor: 'rgb(192,192,192)' }}></span>
+          <span className='dot' style={{ backgroundColor: offlineIconColor }}></span>
         </div>
       ));
       return offlineUsersJSX;
@@ -135,12 +142,12 @@ export default function ChatScreen() {
           onClick={() => setIsSelectedUser(userId)}
           style={
             userId === isSelectedUser
-              ? { backgroundColor: 'rgb(219,233,246)' }
-              : { backgroundColor: '' }
+              ? { backgroundColor: selectedUserBackgroundColor }
+              : { backgroundColor: 'none' }
           }
         >
           <div id='user'>{onlineUsers[userId]}</div>
-          <span className='dot' style={{ backgroundColor: 'rgb(95, 236, 107)' }}></span>
+          <span className='dot' style={{ backgroundColor: onlineIconColor }}></span>
         </div>
       ));
       return onlineUsersJSX;
@@ -171,7 +178,7 @@ export default function ChatScreen() {
                   <span
                     className='text'
                     style={{
-                      backgroundColor: message.sender === myId ? '#b9bcb9' : '#82baf3',
+                      backgroundColor: message.sender === myId ? myUserMsgBackgroundColor : opposingUserBackgroundColor,
                     }}
                   >
                     {message.text}
@@ -184,11 +191,11 @@ export default function ChatScreen() {
                   id='message'
                   style={
                     message.sender === myId && message.text || message.file
-                      ? { backgroundColor: '#b9bcb9' }
+                      ? { backgroundColor: myUserMsgBackgroundColor }
                       : !message.text && message.image
                       ? { backgroundColor: 'none' }
                       : message.sender !== myId
-                      ? { backgroundColor: '#82baf3' }
+                      ? { backgroundColor: opposingUserBackgroundColor }
                       : null
                   }
                   ref={textMessage}
@@ -305,8 +312,8 @@ export default function ChatScreen() {
       <div className='chat-body'>
         <div className='chat-message-container'>
           <div className='chat-message-body'>
-            {isSelectedUser && messages.length === 0 ? <span id='no-contacts-selected'>Start Chatting Now!</span> : null}
-            {isSelectedUser && displayMessages()}
+            {isSelectedUser && messages.length === 0 ? <span id='new-chat-selected'>Start Chatting Now!</span> : null}
+            {isSelectedUser ? displayMessages() : <span id='no-contacts-selected'>Select A User and Start Chatting!</span>}
           </div>
         </div>
         {!!isSelectedUser && (
