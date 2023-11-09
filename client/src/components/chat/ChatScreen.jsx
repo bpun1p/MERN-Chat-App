@@ -199,9 +199,9 @@ export default function ChatScreen() {
                     <a className='file-attachment' href={`${upload_url}${message.file}`} target="_blank" rel="noreferrer">
                       {message.file}
                     </a>
+                    <br/>
                   </>
                 )}
-                  <br/>
                   {message.text ? <span className='text'>{message.text}</span> : null}
                   {message.image && ( <img id='imgFile' src={message?.image?.data}/> )}
                 </span>
