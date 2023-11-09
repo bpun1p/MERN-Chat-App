@@ -4,16 +4,16 @@ import Menu from './Menu';
 
 export default function MenuToggler() {
   const [burgerClass, setBurgerClass] = useState('burger-bar unclicked');
-  const [menuClass, setMenuClass] = useState('menu hidden');
+  const [menuClass, setMenuClass] = useState('menu visible');
   const [isMenuClicked, setIsMenuClicked] = useState(false);
 
   const updateMenu = () => {
     if (!isMenuClicked) {
-      setBurgerClass('burger-bar clicked');
-      setMenuClass('menu visible');
-    } else {
       setBurgerClass('burger-bar unclicked');
       setMenuClass('menu hidden');
+    } else {
+      setBurgerClass('burger-bar clicked');
+      setMenuClass('menu visible');
     }
     setIsMenuClicked(!isMenuClicked);
   };
