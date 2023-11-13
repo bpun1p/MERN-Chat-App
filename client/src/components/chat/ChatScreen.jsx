@@ -7,6 +7,7 @@ import { uniqBy } from 'lodash';
 import { useFetchMessagesMutation } from '../../slices/chatsApiSlice';
 import { useGetAllUsersMutation } from '../../slices/usersApiSlice';
 import imageIcon from '../../assets/images/landscape.png';
+import chatIcon from '../../assets/images/chat.png';
 import attachFileIcon from '../../assets/images/attach-file.png';
 
 export default function ChatScreen() {
@@ -314,7 +315,10 @@ export default function ChatScreen() {
   return (
     <div className='chat-container'>
       <div className='chat-contacts-container'>
-        <h3 className='chat-header'>Chats</h3>
+        <div className='header-container'>
+          <h3 className='chat-header'>MyChats</h3>
+          <img type='image' src={chatIcon} id='header-icon'/>
+        </div>
         <div className='chat-contacts-body'>
           {renderOnlineUsers()}
           {renderOfflineUsers()}
@@ -323,8 +327,8 @@ export default function ChatScreen() {
       <div className='chat-body'>
         <div className='chat-message-container'>
           <div className='chat-message-body'>
-            {isSelectedUser && messages.length === 0 ? <span id='new-chat-selected'>Start Chatting Now!</span> : null}
-            {isSelectedUser ? displayMessages() : <span id='no-contacts-selected'>Select A User and Start Chatting!</span>}
+            {isSelectedUser && messages.length === 0 ? <span id='new-chat-selected-text'>Start Chatting Now!</span> : null}
+            {isSelectedUser ? displayMessages() : <span id='no-contacts-selected-text'>Select A User and Start Chatting!</span>}
           </div>
         </div>
         {!!isSelectedUser && (
