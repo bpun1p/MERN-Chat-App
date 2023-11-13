@@ -21,7 +21,6 @@ export default function ChatScreen() {
   const [getAllUsers] = useGetAllUsersMutation();
   const textMessage = useRef();
 
-  const chatBackgroundColor = '#DBE9F6';
   const selectedUserBackgroundColor = '#DBE9F6';
   const myUserMsgBackgroundColor = '#b9bcb9';
   const opposingUserBackgroundColor = '#82baf3'
@@ -48,6 +47,10 @@ export default function ChatScreen() {
   useEffect(() => {
     fetchOfflineUsers();
   }, [onlineUsers]);
+
+  // useEffect(() => {
+  //   sendTypingStatus();
+  // }, [newMessage])
 
   const handleWsMessage = async (e) => {
     e.preventDefault();
@@ -116,7 +119,7 @@ export default function ChatScreen() {
           onClick={() => setIsSelectedUser(userId)}
           style={
             userId === isSelectedUser
-              ? { backgroundColor: chatBackgroundColor }
+              ? { backgroundColor: selectedUserBackgroundColor }
               : { backgroundColor: 'none' }
           }
         >
@@ -299,6 +302,14 @@ export default function ChatScreen() {
       }, 'file');
     }
   };
+
+  // const sendTypingStatus = () => {
+  //   const wsTypingStatusObj = {
+  //     sender: user.user_id,
+  //     recipient: isSelectedUser,
+  //   }
+  //   ws.send(wsTypingStatusObj)
+  // }
 
   return (
     <div className='chat-container'>

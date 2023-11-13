@@ -56,10 +56,10 @@ wsServer.on('connection', (connection, req) => {
       client.send(JSON.stringify(
         {
           online: [...wsServer.clients].map(client => ({
-            id: client._id,
-            email: client.email,
-            name: client.name,
-          })),
+          id: client._id,
+          email: client.email,
+          name: client.name,
+        })),
         }
       ));
     });
