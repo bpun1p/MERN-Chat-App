@@ -13,15 +13,19 @@ import Avatar from '../utils/Avatar/Avatar';
 
 export default function ChatScreen() {
   const [ws, setWs] = useState(null);
-  const [onlineUsers, setOnlineUsers] = useState({});
-  const [offlineUsers, setOfflineUsers] = useState({});
-  const [isSelectedUser, setIsSelectedUser] = useState('');
+  const [onlineUsers, setOnlineUsers] = useState([]);
+  const [offlineUsers, setOfflineUsers] = useState([]);
+  const [isSelectedUser, setIsSelectedUser] = useState({
+    userId: '',
+    name: ''
+  });
   const [newMessage, setNewMessage] = useState('');
   const [messages, setMessages] = useState([]);
   const { user } = useSelector((state) => state.auth);
   const [fetchMessages] = useFetchMessagesMutation();
   const [getAllUsers] = useGetAllUsersMutation();
   const textMessage = useRef();
+  const [isTyping, setIsTyping] = useState([]);
 
   const selectedUserBackgroundColor = '#dbe9f6';
   const myUserMsgBackgroundColor = '#b9bcb9';
@@ -41,8 +45,9 @@ export default function ChatScreen() {
   }, [messages]);
 
   useEffect(() => {
-    if (isSelectedUser) {
-      receiveMessages(isSelectedUser);
+    if (isSelectedUser.userId) {
+      setNewMessage('')
+      receiveMessages(isSelectedUser.userId);
     }
   }, [isSelectedUser]);
 
@@ -50,9 +55,14 @@ export default function ChatScreen() {
     fetchOfflineUsers();
   }, [onlineUsers]);
 
-  // useEffect(() => {
-  //   sendTypingStatus();
-  // }, [newMessage])
+  useEffect(() => {
+    sendTypingStatus();
+  }, [newMessage])
+
+  useEffect(() => {
+
+
+  }, [isTyping])
 
   const handleWsMessage = async (e) => {
     e.preventDefault();
@@ -61,17 +71,22 @@ export default function ChatScreen() {
       if ('online' in onlineData) {
         fetchOnlineUsers(onlineData.online);
       } else if ('text' in onlineData) {
-        setMessages((prev) => [...prev, { ...onlineData }]);
+          if (onlineData.recipient === user.user_id) {
+            setMessages((prev) => [...prev, { ...onlineData }]);
+          }
       } else if ('image' in onlineData) {
-        if (onlineData.recipient === user.user_id) {
-          setMessages((prev) => [...prev, { ...onlineData }]);
-        }
+          if (onlineData.recipient === user.user_id) {
+            setMessages((prev) => [...prev, { ...onlineData }]);
+          }
       } else if ('file' in onlineData) {
-        if (onlineData.recipient === user.user_id) {
-          setMessages((prev) => [...prev, { ...onlineData }]);
-        }
-      }
-    }
+          if (onlineData.recipient === user.user_id) {
+            setMessages((prev) => [...prev, { ...onlineData }]);
+          }
+      } else if ('typingStatus' in onlineData) {
+          if (onlineData.recipient === user.user_id) {
+              setIsTyping([onlineData])
+            }
+      }}
   };
 
   const connectToWs = () => {
@@ -111,15 +126,16 @@ export default function ChatScreen() {
     setOnlineUsers(users);
   };
 
+
   const renderOfflineUsers = () => {
     if (offlineUsers) {
       const offlineUsersJSX = Object.keys(offlineUsers).map((userId) => (
         <div
           className='user-container'
           key={nanoid()}
-          onClick={() => setIsSelectedUser(userId)}
+          onClick={() => setIsSelectedUser({...isSelectedUser, userId: userId, name: offlineUsers[userId]})}
           style={
-            userId === isSelectedUser
+            userId === isSelectedUser.userId
               ? { backgroundColor: selectedUserBackgroundColor }
               : { backgroundColor: 'none' }
           }
@@ -146,9 +162,9 @@ export default function ChatScreen() {
         <div
           className='user-container'
           key={nanoid()}
-          onClick={() => setIsSelectedUser(userId)}
+          onClick={() => setIsSelectedUser({...isSelectedUser, userId: userId, name: onlineUsers[userId]})}
           style={
-            userId === isSelectedUser
+            userId === isSelectedUser.userId
               ? { backgroundColor: selectedUserBackgroundColor }
               : { backgroundColor: 'none' }
           }
@@ -173,7 +189,7 @@ export default function ChatScreen() {
 
   const displayMessages = () => {
     const myId = user.user_id;
-    if (isSelectedUser && messages.length > 0) {
+    if (isSelectedUser.userId && messages.length > 0) {
       const messagesWithoutDupes = uniqBy(messages, '_id');
       const displayMessagesJSX = messagesWithoutDupes.map((message) => (
         <div key={nanoid()}>
@@ -240,8 +256,9 @@ export default function ChatScreen() {
     if (e) e.preventDefault();
     if (newMessage.trim() !== '' || fileType) {
       const wsData = {
-        recipient: isSelectedUser,
+        recipient: isSelectedUser.userId,
         sender: user.user_id,
+        type: 'message'
       };
 
       if (fileType === 'image') {
@@ -262,7 +279,7 @@ export default function ChatScreen() {
         image: fileType === 'image' ? readerResult : null,
         file: fileType === 'file' ? readerResult.name : null,
         sender: user.user_id,
-        recipient: isSelectedUser,
+        recipient: isSelectedUser.userId,
         _id: Date.now(),
       };
 
@@ -310,13 +327,17 @@ export default function ChatScreen() {
     }
   };
 
-  // const sendTypingStatus = () => {
-  //   const wsTypingStatusObj = {
-  //     sender: user.user_id,
-  //     recipient: isSelectedUser,
-  //   }
-  //   ws.send(wsTypingStatusObj)
-  // }
+  const sendTypingStatus = () => {
+    if (ws) {
+      const typingStatusData = {
+        sender: user.user_id,
+        recipient: isSelectedUser.userId,
+        type: 'typing',
+        status: newMessage.trim() ? 'typing' : 'stopped'
+      }
+      ws.send(JSON.stringify(typingStatusData))
+    }
+  }
 
   return (
     <div className='chat-container'>
@@ -333,11 +354,12 @@ export default function ChatScreen() {
       <div className='chat-body'>
         <div className='chat-message-container'>
           <div className='chat-message-body'>
-            {isSelectedUser && messages.length === 0 ? <span id='new-chat-selected-text'>Start Chatting Now!</span> : null}
-            {isSelectedUser ? displayMessages() : <span id='no-contacts-selected-text'>Select A User and Start Chatting!</span>}
+            {isSelectedUser.userId && messages.length === 0 ? <span id='new-chat-selected-text'>Start Chatting Now!</span> : null}
+            {isSelectedUser.userId ? displayMessages() : <span id='no-contacts-selected-text'>Select A User and Start Chatting!</span>}
           </div>
         </div>
-        {!!isSelectedUser && (
+        {isTyping.length !== 0 && isTyping[0].typingStatus === true && isSelectedUser.userId === isTyping[0].sender ? <span className='typingStatus-text'>{`${isSelectedUser.name} is typing ...`}</span> : null}
+        {!!isSelectedUser.userId && (
           <form className='chat-text-container' onSubmit={sendMessage}>
             <label type='button' className='attach-image-btn'>
               <input type='file' className='hidden' onChange={sendImage} />

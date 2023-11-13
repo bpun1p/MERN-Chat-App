@@ -28,6 +28,7 @@ app.use(cookieParser());
 
 // Middleware to enable requests between multiple browsers
 const cors = require('cors');
+const { TypedEventEmitter } = require('mongodb');
 app.use(cors({ origin: ['http://localhost:5173', 'https://bpun1p-chat-app.onrender.com'], credentials: true }));
 
 // Connect to MongoDB
@@ -93,43 +94,63 @@ wsServer.on('connection', (connection, req) => {
 
   connection.on('message', async (message) => {
     const messageData = JSON.parse(message.toString());
-    const { recipient, sender, text, image, file } = messageData;
-    if (sender && recipient && (text || image || file)) {
-      const messageObj = {
-        sender: sender,
-        recipient: recipient,
-      };
-
-      if (image) {
-        messageObj.image = image;
+    const { recipient, sender, text, image, file, type, status } = messageData;
+    if (type === 'typing') {
+      if (sender && recipient && status === 'stopped') {
+        [...wsServer.clients]
+          .filter(client => client._id === recipient)
+          .forEach(client => client.send(JSON.stringify({
+            sender: sender,
+            recipient: recipient,
+            typingStatus: false
+          })));
+      } else if (sender && recipient && status === 'typing') {
+        [...wsServer.clients]
+          .filter(client => client._id === recipient)
+          .forEach(client => client.send(JSON.stringify({
+            sender: sender,
+            recipient: recipient,
+            typingStatus: true
+          })));
       }
-
-      if (file) {
-        console.log(file.name)
-        const path = __dirname + '/uploads/' + file.name;
-        const bufferData = Buffer.from(file.data.split(',')[1], 'base64');
-        fs.writeFile(path, bufferData, () => {
-          console.log('file saved' + path)
-        })
-        messageObj.file = file.name
-      }
-
-      if (text) {
-        messageObj.text = text;
-      }
-
-      const messageDoc = await Message.create(messageObj);
-
-      [...wsServer.clients]
-        .filter(client => client._id === recipient)
-        .forEach(client => client.send(JSON.stringify({
-          text,
-          image,
-          file,
+    } 
+    if (type === 'message') {
+      if (sender && recipient && (text || image || file)) {
+        const messageObj = {
           sender: sender,
           recipient: recipient,
-          _id: messageDoc._id,
-        })));
+        };
+
+        if (image) {
+          messageObj.image = image;
+        };
+
+        if (file) {
+          const path = __dirname + '/uploads/' + file.name;
+          const bufferData = Buffer.from(file.data.split(',')[1], 'base64');
+          fs.writeFile(path, bufferData, () => {
+            console.log('file saved' + path)
+          })
+          messageObj.file = file.name
+        };
+
+        if (text) {
+          messageObj.text = text;
+        };
+  
+        const messageDoc = await Message.create(messageObj);
+  
+        [...wsServer.clients]
+          .filter(client => client._id === recipient)
+          .forEach(client => client.send(JSON.stringify({
+            text,
+            image,
+            file,
+            sender: sender,
+            recipient: recipient,
+            _id: messageDoc._id,
+          })));
+      }
     }
   });
   // Notify about online users when someone connects
