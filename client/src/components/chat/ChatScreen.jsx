@@ -9,6 +9,7 @@ import { useGetAllUsersMutation } from '../../slices/usersApiSlice';
 import imageIcon from '../../assets/images/landscape.png';
 import chatIcon from '../../assets/images/chat.png';
 import attachFileIcon from '../../assets/images/attach-file.png';
+import Avatar from '../utils/Avatar/Avatar';
 
 export default function ChatScreen() {
   const [ws, setWs] = useState(null);
@@ -22,11 +23,11 @@ export default function ChatScreen() {
   const [getAllUsers] = useGetAllUsersMutation();
   const textMessage = useRef();
 
-  const selectedUserBackgroundColor = '#DBE9F6';
+  const selectedUserBackgroundColor = '#dbe9f6';
   const myUserMsgBackgroundColor = '#b9bcb9';
   const opposingUserBackgroundColor = '#82baf3'
-  const offlineIconColor = '#C0C0C0';
-  const onlineIconColor = '#5FEC6B';
+  const offlineIconColor = '#c0c0c0';
+  const onlineIconColor = '#5fec6b';
 
   const ws_url = import.meta.env.VITE_WS_URL;
   const upload_url = import.meta.env.VITE_UPLOAD_URL;
@@ -67,7 +68,6 @@ export default function ChatScreen() {
         }
       } else if ('file' in onlineData) {
         if (onlineData.recipient === user.user_id) {
-          console.log(onlineData)
           setMessages((prev) => [...prev, { ...onlineData }]);
         }
       }
@@ -124,8 +124,11 @@ export default function ChatScreen() {
               : { backgroundColor: 'none' }
           }
         >
+          <div className='user-status-container'>
+            <span className='status-icon' style={{ backgroundColor: offlineIconColor }}></span>
+            <Avatar username={offlineUsers[userId]} />
+          </div>
           <div id='user'>{offlineUsers[userId]}</div>
-          <span className='dot' style={{ backgroundColor: offlineIconColor }}></span>
         </div>
       ));
       return offlineUsersJSX;
@@ -150,8 +153,11 @@ export default function ChatScreen() {
               : { backgroundColor: 'none' }
           }
         >
+          <div className='user-status-container'>
+            <span className='status-icon' style={{ backgroundColor: onlineIconColor }}></span>
+            <Avatar username={onlineUsers[userId]} />
+          </div>
           <div id='user'>{onlineUsers[userId]}</div>
-          <span className='dot' style={{ backgroundColor: onlineIconColor }}></span>
         </div>
       ));
       return onlineUsersJSX;

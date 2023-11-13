@@ -13,12 +13,12 @@
   height: 70%;
   position: relative;
   top: 10%;
-  margin: 0 10px;
 }
 
 #user {
-  padding: 5%;
+  padding: 0 5%;
   font-size: 1.5rem;
+  vertical-align: middle;
 }
 
 .chat-body {
@@ -73,15 +73,21 @@
   display: flex;
   align-items: center;
   cursor: pointer;
+  border-bottom: 1px solid rgb(226, 223, 223);
+  height: 5rem;
 }
 
-.dot {
+.status-icon {
   height: 15px;
   width: 15px;
   border-radius: 50%;
+  display: block;
+  position: relative;
+  left: 25%;
+  top: 0.8rem;
 }
 
-#no-contacts-selected-text, .new-chat-selected-text {
+#no-contacts-selected-text, #new-chat-selected-text {
   position: relative;
   left: 40%;
   top: 50%;
@@ -144,7 +150,7 @@
   align-items: center;
   position: relative;
   top: 10%;
-  margin: 0 20px;
+  justify-content: center;
 }
 
 .chat-header {
@@ -154,5 +160,13 @@
 }
 
 #header-icon {
-  width: 30%;
+  width: 25%;
+  align-items: center;
 }
+
+.user-status-container {
+  margin-left:15px;
+  align-items: center;
+  display: flex;
+}
+
