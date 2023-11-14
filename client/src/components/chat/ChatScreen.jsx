@@ -59,11 +59,6 @@ export default function ChatScreen() {
     sendTypingStatus();
   }, [newMessage])
 
-  useEffect(() => {
-
-
-  }, [isTyping])
-
   const handleWsMessage = async (e) => {
     e.preventDefault();
     if (e.data.length > 0) {
@@ -263,8 +258,9 @@ export default function ChatScreen() {
 
       if (fileType === 'image') {
         wsData.image = readerResult;
-      } else if (fileType === 'file') {
-        console.log(readerResult)
+      } 
+      
+      if (fileType === 'file') {
         wsData.file = readerResult;
       }
 

@@ -137,15 +137,15 @@ wsServer.on('connection', (connection, req) => {
         if (text) {
           messageObj.text = text;
         };
-  
+
         const messageDoc = await Message.create(messageObj);
   
         [...wsServer.clients]
           .filter(client => client._id === recipient)
           .forEach(client => client.send(JSON.stringify({
-            text,
-            image,
-            file,
+            text: text || null,
+            image: image || null,
+            file:  file ? file.name : null,
             sender: sender,
             recipient: recipient,
             _id: messageDoc._id,
